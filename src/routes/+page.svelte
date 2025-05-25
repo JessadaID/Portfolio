@@ -33,6 +33,7 @@
       linkedin: ""
     },
     skills: [
+      /*
       { 
         name: "JavaScript", 
         category: { en: "Frontend", th: "ส่วนหน้า" }, 
@@ -104,21 +105,9 @@
         category: { en: "Database", th: "ฐานข้อมูล" },
         icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
         proficiency: { en: "IntermedExpertiate", th: "เชี่ยวชาญ" }
-      }
+      }*/
     ],
-    projects: [
-      {
-        title: { en: "Project topic submission support system", th: "ระบบสนับสนุนการเสนอหัวข้อโครงงาน" },
-        description: {
-          en: "A project topic submission support system developed with Svelte and Firebase that allows students to easily propose project topics",
-          th: "เป็นระบบสนับการส่งหัวข้อโครงงานที่พัฒนาด้วย Svelte และ Firebase ที่ช่วยให้นักศึกษาเสนอหัวข้อโครงงานได้อย่างง่ายดาย"
-        },
-        image: "https://rmutl-cpe-ce02.vercel.app/FrontWEB.png",
-        tech: ["Svelte", "Node.js", "Firebase", "Tailwind CSS"],
-        github: "https://github.com/JessadaID/rmutl-cpe-ce02",
-        demo: "https://rmutl-cpe-ce02.vercel.app"
-      }
-    ],
+   
     experience: [
       /*
       {
@@ -324,9 +313,9 @@
 
   <About {uiStrings} {portfolioData} {currentLang}/>
 
-  <Skill {uiStrings} {portfolioData} {currentLang}/>
+  <Skill {uiStrings}  {currentLang}/>
 
-  <Project {uiStrings} {portfolioData} {currentLang}/>
+  <Project {uiStrings}  {currentLang}/>
 
   <Experience {uiStrings} {portfolioData} {currentLang}/>
 

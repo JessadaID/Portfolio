@@ -1,7 +1,17 @@
 <script>
+  import { onMount } from "svelte";
+  import { fly } from "svelte/transition";
+
     export let uiStrings;
-    export let portfolioData;
+    let portfolioData;
     export let currentLang = 'th';
+
+  onMount( async() => {
+     const respond = await fetch('/api/project');
+     const data = await respond.json();
+      portfolioData = data;
+      //console.log(portfolioData);
+  });
 </script>
 
 <!-- Projects Section -->
@@ -11,7 +21,7 @@
         {uiStrings[currentLang].projectsTitle}
       </h2>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {#each portfolioData.projects as project, index}
+        {#each portfolioData as project, index}
           <div 
             in:fly="{{ y: 50, duration: 600, delay: index * 200 }}"
             class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 
