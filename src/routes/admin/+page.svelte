@@ -281,7 +281,7 @@
                 </div>
                 <div>
                     <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                    <input type="url" id="image" bind:value={projectForm.image} required class="w-full input-field" placeholder="https://example.com/image.png">
+                    <input type="text" id="image" bind:value={projectForm.image} required class="w-full input-field" placeholder="https://example.com/image.png">
                 </div>
                 <div>
                     <label for="github" class="block text-sm font-medium text-gray-700 mb-1">GitHub URL</label>
