@@ -137,8 +137,8 @@
     en: {
       navHome: "Home", navAbout: "About", navSkills: "Skills", navProjects: "Projects", navExperience: "Experience", navContact: "Contact",
       heroHello: "Hello, I'm", heroViewWork: "View My Work", heroContactMe: "Contact Me",
-      aboutMeTitle: "About Me", aboutExperience: "Experience", aboutYears: "5+ Years in Web Development since 2019 ",
-      aboutProjects: "Projects", aboutCompletedProjects: "10+ Completed Projects", aboutFocus: "Focus", aboutFocusText: "Modern Web Technologies",
+      aboutMeTitle: "About Me", aboutExperience: "Experience", aboutYears: "2+ Years in Web Development",
+      aboutProjects: "Projects", aboutCompletedProjects: "3+ Completed Projects", aboutFocus: "Focus", aboutFocusText: "Modern Web Technologies",
       skillsTitle: "Skills & Technologies",
       projectsTitle: "Featured Projects", projectGithub: "GitHub", projectDemo: "Live Demo",
       experienceTitle: "Work Experience",
@@ -150,8 +150,8 @@
     th: {
       navHome: "หน้าแรก", navAbout: "เกี่ยวกับ", navSkills: "ทักษะ", navProjects: "โปรเจกต์", navExperience: "ประสบการณ์", navContact: "ติดต่อ",
       heroHello: "สวัสดี, ผมชื่อ", heroViewWork: "ดูผลงานของฉัน", heroContactMe: "ติดต่อฉัน",
-      aboutMeTitle: "เกี่ยวกับฉัน", aboutExperience: "ประสบการณ์", aboutYears: "5+ ปีในการพัฒนาเว็บ ตั้งแต่ปี 2019 (ปวส.)",
-      aboutProjects: "โปรเจกต์", aboutCompletedProjects: "10+ โปรเจกต์ที่เสร็จสมบูรณ์", aboutFocus: "ความเชี่ยวชาญ", aboutFocusText: "เทคโนโลยีเว็บสมัยใหม่",
+      aboutMeTitle: "เกี่ยวกับฉัน", aboutExperience: "ประสบการณ์", aboutYears: "2+ ปีในการพัฒนาเว็บ",
+      aboutProjects: "โปรเจกต์", aboutCompletedProjects: "3+ โปรเจกต์ที่เสร็จสมบูรณ์", aboutFocus: "ความเชี่ยวชาญ", aboutFocusText: "เทคโนโลยีเว็บสมัยใหม่",
       skillsTitle: "ทักษะและเทคโนโลยี",
       projectsTitle: "โปรเจกต์เด่น", projectGithub: "GitHub", projectDemo: "เดโม่",
       experienceTitle: "ประสบการณ์ทำงาน",
