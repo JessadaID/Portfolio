@@ -53,12 +53,14 @@
                 >
                   {uiStrings[currentLang].projectGithub}
                 </a>
+                {#if project.demo}
                 <a 
                   href={project.demo} 
                   class="text-gray-600 hover:text-blue-600 transition-colors text-sm"
                 >
                   {uiStrings[currentLang].projectDemo}
                 </a>
+                {/if}
               </div>
             </div>
           </div>

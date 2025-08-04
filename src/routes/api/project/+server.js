@@ -1,13 +1,9 @@
 import { db } from "$lib/firebase";
 import { collection, getDocs ,doc , where, query,addDoc ,updateDoc , deleteDoc} from "firebase/firestore";
 import { json } from "@sveltejs/kit";
-import { getAuth } from "firebase/auth";
-
-const auth = getAuth();
 
 export async function GET() {
     try {
-
         const q = query(collection(db, "projects"));
 
         const querySnapshot = await getDocs(q);

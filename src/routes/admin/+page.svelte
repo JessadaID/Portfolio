@@ -31,13 +31,14 @@
         { value: 'Frontend', label: 'Frontend' },
         { value: 'Backend', label: 'Backend' },
         { value: 'Database', label: 'Database' },
-        { value: 'Devops', label: 'DevOps' },
+        { value: 'Mobile', label: 'Mobile Development' },
+        { value: 'Programming', label: 'Programming Languages' },
         { value: 'Tools', label: 'Tools & Others' }
     ];
 
     const proficiencyLevels = [
         { value: { th: 'เริ่มต้น', en: 'Beginner'}, label: {en:'Beginner', th:'เริ่มต้น'} },
-        { value: { th: 'พื้นฐาน', en: 'Intermediate'}, label: {en:'Intermediate', th:'ระดับกลาง'} },
+        { value: { th: 'ระดับกลาง', en: 'Intermediate'}, label: {en:'Intermediate', th:'ระดับกลาง'} },
         { value: { th : 'ระดับสูง', en: 'Advanced'}, label: {en:'Advanced', th:'ระดับสูง'} },
         { value: { th: 'ผู้เชี่ยวชาญ', en: 'Expert'}, label: {en:'Expert', th:'ผู้เชี่ยวชาญ'} }
     ];
