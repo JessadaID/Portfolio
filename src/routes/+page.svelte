@@ -10,7 +10,6 @@
   import About from './About.svelte';
   // Portfolio data - ในอนาคตจะโหลดจาก JSON file
 
-  
   let portfolioData = {
     profile: {
       name: {

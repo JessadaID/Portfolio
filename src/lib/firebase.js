@@ -3,12 +3,12 @@ import { getFirestore } from "firebase/firestore";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDnDzWt0SOn_3Xi0z-Crb4sOTu1JpIKHVM",
-  authDomain: "portfollio-f2ebe.firebaseapp.com",
-  projectId: "portfollio-f2ebe",
-  storageBucket: "portfollio-f2ebe.firebasestorage.app",
-  messagingSenderId: "30818819009",
-  appId: "1:30818819009:web:5396f56c4b8dc3515c6d40"
+  apiKey: import.meta.env.VITE_apiKey,
+  authDomain: import.meta.env.VITE_authDomain,
+  projectId: import.meta.env.VITE_projectId,
+  storageBucket: import.meta.env.VITE_storageBucket,
+  messagingSenderId: import.meta.env.VITE_messagingSenderId,
+  appId: import.meta.env.VITE_appId
 };
 
 // Initialize Firebase
