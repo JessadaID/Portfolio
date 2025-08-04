@@ -8,6 +8,7 @@
   import Experience from './Experience.svelte';
   import Contract from './Contact.svelte';
   import About from './About.svelte';
+  import Certificates from './Certificates.svelte';
   // Portfolio data - ในอนาคตจะโหลดจาก JSON file
 
   let portfolioData = {
@@ -21,114 +22,51 @@
         th: "นักพัฒนาเว็บ Full Stack"
       },
       bio: {
-        en: "I am a student and developer passionate about web technologies, with experience in building modern and user-responsive applications.",
-        th: "ผมเป็นนักศึกษาและนักพัฒนาที่หลงใหลในเทคโนโลยีเว็บ มีประสบการณ์ในการสร้างแอปพลิเคชันที่ทันสมัยและตอบสนองความต้องการของผู้ใช้"
+        en: "The leader is a computer engineering student with an interest in full-stack development. He enjoys building applications from front-end to back-end, loves experimenting with new technologies, and is always ready to learn.",
+        th: "สวัสดีครับ ผมเป็นนักศึกษาวิศวกรรมคอมพิวเตอร์และสนใจ Full-stack Development ชอบทำเว็บแอปตั้งแต่หน้าบ้านถึงหลังบ้าน ชอบลองเทคโนโลยีใหม่ๆ และพร้อมเรียนรู้ตลอดเวลา"
       },
       image: "https://avatars.githubusercontent.com/u/113906747?v=4",
       location: {
         en: "96 moo 7 mealoy thoeng Chiang Rai, Thailand",
         th: "96 หมู่ 7 ต.แม่ลอย อ.เทิง จ.เชียงราย, ประเทศไทย"
       },
-      email: "ipnioko54@gmail.com",
+      email: "jessada.bo46@gmail.com",
       github: "https://github.com/JessadaID",
       linkedin: ""
     },
     skills: [
-      /*
-      { 
-        name: "JavaScript", 
-        category: { en: "Frontend", th: "ส่วนหน้า" }, 
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
-        proficiency: { en: "Expert", th: "เชี่ยวชาญ" }
-      },
-      { 
-        name: "React", 
-        category: { en: "Frontend", th: "ส่วนหน้า" }, 
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
-        proficiency: { en: "Starter", th: "เริ่มต้น" }
-      },
-      { 
-        name: "Svelte", 
-        category: { en: "Frontend", th: "ส่วนหน้า" }, 
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/svelte/svelte-original.svg",
-        proficiency: { en: "Advanced", th: "เชี่ยวชาญ" }
-      },
-      { 
-        name: "Node.js", 
-        category: { en: "Backend", th: "ส่วนหลัง" }, 
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
-        proficiency: { en: "Intermediate", th: "ปานกลาง" }
-      },
-      { 
-        name: "Python", 
-        category: { en: "Backend", th: "ส่วนหลัง" }, 
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
-        proficiency: { en: "Intermediate", th: "ปานกลาง" }
-      },
-      { 
-        name: "Java", 
-        category: { en: "Backend", th: "ส่วนหลัง" }, // Adjusted category for better fit
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
-        proficiency: { en: "Intermediate", th: "ปานกลาง" }
-      },
-      { 
-        name: "C , C++", 
-        category: { en: "Software Development", th: "พัฒนาซอฟต์แวร์" }, // Adjusted category
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
-        proficiency: { en: "Intermediate", th: "ปานกลาง" }
-      },
-      { 
-        name: "Php", 
-        category: { en: "Backend", th: "ส่วนหลัง" }, // Adjusted category
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg",
-        proficiency: { en: "Expert", th: "เชี่ยวชาญ" }
-      },
-      { 
-        name: "Firebase", 
-        category: { en: "Cloud Platform", th: "แพลตฟอร์มคลาวด์" }, // Adjusted category
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg",
-        proficiency: { en: "Expert", th: "เชี่ยวชาญ" }
-      },
-      {
-        name: "Tailwind CSS", 
-        category: { en: "Frontend", th: "ส่วนหน้า" }, 
-        icon: "https://www.svgrepo.com/show/354431/tailwindcss-icon.svg",
-        proficiency: { en: "Intermediate", th: "ปานกลาง" }
-      },
-      { 
-        name: "Git", 
-        category: { en: "Version Control", th: "การควบคุมเวอร์ชัน" }, 
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
-        proficiency: { en: "Intermediate", th: "ปานกลาง" }
-      },
-      {
-        name: "Sql",
-        category: { en: "Database", th: "ฐานข้อมูล" },
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
-        proficiency: { en: "IntermedExpertiate", th: "เชี่ยวชาญ" }
-      }*/
     ],
    
     experience: [
-      /*
+    ],
+
+    certificates: [
       {
-        company: "Tech Startup Inc.",
-        position: { en: "Senior Frontend Developer", th: "นักพัฒนาส่วนหน้าอาวุโส" },
-        period: "2022 - Present",
-        description: {
-          en: "Lead frontend development team, architected scalable React applications",
-          th: "นำทีมพัฒนาส่วนหน้า ออกแบบสถาปัตยกรรมแอปพลิเคชัน React ที่ปรับขนาดได้"
+        title: {
+          en: "Creating web applications with HTML, CSS, JavaScript",
+          th: "การสร้างเว็บแอพพลิเคชัน ด้วย HTML, CSS, JavaScript"
+        },
+        issuer: "Udemy",
+        date: "05/08/2025",
+        link: "./cer-html-css-js.jpg",
+        description : {
+          en: "A course that trains you to use HTML, CSS, and JavaScript to create full-stack web applications. (20 projects)",
+          th: "หลักสูตรที่ฝึกการใช้งาน HTML, CSS, JavaScript ในการสร้างแอพพลิเคชันเว็บแบบ Full Stack (20 โปรเจกต์)"
         }
       },
       {
-        company: "Digital Agency",
-        position: { en: "Full Stack Developer", th: "นักพัฒนา Full Stack" },
-        period: "2020 - 2022",
-        description: {
-          en: "Developed custom web solutions for various clients using modern technologies",
-          th: "พัฒนาโซลูชันเว็บแบบกำหนดเองสำหรับลูกค้าหลากหลายโดยใช้เทคโนโลยีที่ทันสมัย"
+        title: {
+          en: "Training on the use of Generative AI for research and development",
+          th: "อบรมการใช้ Generative AI เพื่อการวิจัยและพัฒนา"
+        },
+        issuer: "",
+        date: "05/07/2025",
+        link: "./Cer_CPE_AI.jpg",
+        description : {
+          en: "A comprehensive training course on the use of AI to assist in research and development and the use of AI to its maximum benefit.",
+          th: "หลักสูตรอบรมการใช้ AI ช่วยในการวิจัยและพัฒนาอย่างครอบคลุม และการใช้งาน AI ให้เกิดประโยชน์สูงสุด"
         }
-      }*/
+      }
     ]
   };
 
@@ -146,20 +84,22 @@
       contactTitle: "Let's Work Together",
       contactIntro: "I'm always interested in new opportunities and exciting projects. Let's discuss how we can bring your ideas to life.",
       contactSendEmail: "Send Email", contactViewGithub: "View GitHub", contactLinkedIn: "LinkedIn",
-      footerRights: "All rights reserved."
+      footerRights: "All rights reserved.",
+      certificatesTitle: "Certificates",
     },
     th: {
       navHome: "หน้าแรก", navAbout: "เกี่ยวกับ", navSkills: "ทักษะ", navProjects: "โปรเจกต์", navExperience: "ประสบการณ์", navContact: "ติดต่อ",
       heroHello: "สวัสดี, ผมชื่อ", heroViewWork: "ดูผลงานของฉัน", heroContactMe: "ติดต่อฉัน",
       aboutMeTitle: "เกี่ยวกับฉัน", aboutExperience: "ประสบการณ์", aboutYears: "2+ ปีในการพัฒนาเว็บ",
-      aboutProjects: "โปรเจกต์", aboutCompletedProjects: "3+ โปรเจกต์ที่เสร็จสมบูรณ์", aboutFocus: "ความเชี่ยวชาญ", aboutFocusText: "เทคโนโลยีเว็บสมัยใหม่",
+      aboutProjects: "โปรเจกต์", aboutCompletedProjects: "3+ โปรเจกต์ที่เสร็จสมบูรณ์", aboutFocus: "ความชื่นชอบ", aboutFocusText: "เทคโนโลยีเว็บสมัยใหม่",
       skillsTitle: "ทักษะและเทคโนโลยี",
       projectsTitle: "โปรเจกต์เด่น", projectGithub: "GitHub", projectDemo: "เดโม่",
       experienceTitle: "ประสบการณ์ทำงาน",
       contactTitle: "มาทำงานร่วมกัน",
       contactIntro: "ฉันสนใจโอกาสใหม่ๆ และโปรเจกต์ที่น่าตื่นเต้นอยู่เสมอ มาพูดคุยกันว่าเราจะทำให้ไอเดียของคุณเป็นจริงได้อย่างไร",
       contactSendEmail: "ส่งอีเมล", contactViewGithub: "ดู GitHub", contactLinkedIn: "LinkedIn",
-      footerRights: "สงวนลิขสิทธิ์"
+      footerRights: "สงวนลิขสิทธิ์",
+      certificatesTitle: "ใบรับรอง",
     }
   };
 
@@ -319,6 +259,8 @@
   <Project {uiStrings}  {currentLang}/>
 
   <Experience {uiStrings} {portfolioData} {currentLang}/>
+
+  <Certificates {uiStrings} {portfolioData} {currentLang}/>
 
   <Contract {uiStrings} {portfolioData} {currentLang}/>
 </main>
