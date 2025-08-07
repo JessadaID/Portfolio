@@ -8,6 +8,7 @@
   import Experience from './Experience.svelte';
   import Contract from './Contact.svelte';
   import About from './About.svelte';
+  import RhombusCanvas from '$lib/RhombusCanvas.svelte';
   import Certificates from './Certificates.svelte';
   // Portfolio data - ในอนาคตจะโหลดจาก JSON file
 
@@ -193,64 +194,74 @@
 </nav>
 
 <main class="pt-15">
-  <!-- Hero Section -->
-  <section id="home" class="min-h-screen flex items-center bg-gradient-to-br from-blue-50 to-indigo-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
-      <div>
-        {#if isVisible}
-          <h1 
-            in:fly="{{ y: 30, duration: 800, easing: quintOut }}" 
-            class="text-4xl md:text-6xl font-bold text-gray-800 mb-4"
+  <!-- Hero Section with Canvas Background -->
+<section id="home" class="py-32 flex items-center bg-gradient-to-br from-blue-50 to-indigo-100 relative overflow-hidden">
+  <!-- Canvas Background -->
+  <div class="absolute inset-0" style="z-index: 1;">
+    <RhombusCanvas />
+  </div>
+  
+  <!-- Content -->
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center relative bg-white/50 backdrop-blur-sm p-10 rounded-lg shadow-2xl" style="z-index: 2;">
+    <div>
+      {#if isVisible}
+        <h1 
+          in:fly="{{ y: 30, duration: 800, easing: quintOut }}" 
+          class="text-4xl md:text-6xl font-bold text-gray-800 mb-4 relative"
+        >
+          {uiStrings[currentLang].heroHello}<br>
+          <span class="text-blue-600">{portfolioData.profile.name[currentLang]}</span>
+        </h1>
+        <p 
+          in:fly="{{ y: 30, duration: 800, delay: 200, easing: quintOut }}"
+          class="text-xl text-gray-600 mb-6 relative"
+        >
+          {portfolioData.profile.title[currentLang]}
+        </p>
+        <p 
+          in:fly="{{ y: 30, duration: 800, delay: 400, easing: quintOut }}"
+          class="text-gray-500 mb-8 leading-relaxed relative"
+        >
+          {portfolioData.profile.bio[currentLang]}
+        </p>
+        <div 
+          in:fly="{{ y: 30, duration: 800, delay: 600, easing: quintOut }}"
+          class="flex space-x-4 relative"
+        >
+          <button 
+            on:click={() => scrollToSection('projects')}
+            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 
+                   transition-all duration-300 hover:scale-105 shadow-lg"
           >
-            {uiStrings[currentLang].heroHello}<br>
-            <span class="text-blue-600">{portfolioData.profile.name[currentLang]}</span>
-          </h1>
-          <p 
-            in:fly="{{ y: 30, duration: 800, delay: 200, easing: quintOut }}"
-            class="text-xl text-gray-600 mb-6"
+            {uiStrings[currentLang].heroViewWork}
+          </button>
+          <button 
+            on:click={() => scrollToSection('contact')}
+            class="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg 
+                   hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-lg
+                   bg-white/80 backdrop-blur-sm"
           >
-            {portfolioData.profile.title[currentLang]}
-          </p>
-          <p 
-            in:fly="{{ y: 30, duration: 800, delay: 400, easing: quintOut }}"
-            class="text-gray-500 mb-8 leading-relaxed"
-          >
-            {portfolioData.profile.bio[currentLang]}
-          </p>
-          <div 
-            in:fly="{{ y: 30, duration: 800, delay: 600, easing: quintOut }}"
-            class="flex space-x-4"
-          >
-            <button 
-              on:click={() => scrollToSection('projects')}
-              class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 
-                     transition-all duration-300 hover:scale-105"
-            >
-              {uiStrings[currentLang].heroViewWork}
-            </button>
-            <button 
-              on:click={() => scrollToSection('contact')}
-              class="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg 
-                     hover:bg-blue-600 hover:text-white transition-all duration-300"
-            >
-              {uiStrings[currentLang].heroContactMe}
-            </button>
-          </div>
-        {/if}
-      </div>
-      <div class="flex justify-center">
-        {#if isVisible}
-          <div in:scale="{{ duration: 800, delay: 800, easing: quintOut }}">
-            <img 
-              src={portfolioData.profile.image} 
-              alt={portfolioData.profile.name[currentLang]}
-              class="w-80 h-80 rounded-full object-cover shadow-2xl border-8 border-white"
-            >
-          </div>
-        {/if}
-      </div>
+            {uiStrings[currentLang].heroContactMe}
+          </button>
+        </div>
+      {/if}
     </div>
-  </section>
+    <div class="flex justify-center relative">
+      {#if isVisible}
+        <div in:scale="{{ duration: 800, delay: 800, easing: quintOut }}" class="relative">
+          <img 
+            src={portfolioData.profile.image} 
+            alt={portfolioData.profile.name[currentLang]}
+            class="w-80 h-80 rounded-full object-cover shadow-2xl border-8 border-white relative"
+            style="z-index: 3;"
+          >
+          <!-- Glow effect behind profile image -->
+          <div class="absolute inset-0 w-80 h-80 rounded-full bg-blue-400/20 blur-2xl -z-10"></div>
+        </div>
+      {/if}
+    </div>
+  </div>
+</section>
 
   <About {uiStrings} {portfolioData} {currentLang}/>
 
