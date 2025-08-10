@@ -33,7 +33,7 @@
       },
       email: "jessada.bo46@gmail.com",
       github: "https://github.com/JessadaID",
-      linkedin: ""
+      linkedin: "https://www.linkedin.com/in/jessada-boonta-40587a378/"
     },
     skills: [
     ],
@@ -75,7 +75,7 @@
 
   const uiStrings = {
     en: {
-      navHome: "Home", navAbout: "About", navSkills: "Skills", navProjects: "Projects", navExperience: "Experience", navContact: "Contact",
+      navHome: "Home", navAbout: "About", navSkills: "Skills", navProjects: "Projects", navCertificates: "Certificates", navContact: "Contact",
       heroHello: "Hello, I'm", heroViewWork: "View My Work", heroContactMe: "Contact Me",
       aboutMeTitle: "About Me", aboutExperience: "Experience", aboutYears: "2+ Years in Web Development",
       aboutProjects: "Projects", aboutCompletedProjects: "3+ Completed Projects", aboutFocus: "Focus", aboutFocusText: "Modern Web Technologies",
@@ -89,7 +89,7 @@
       certificatesTitle: "Certificates",
     },
     th: {
-      navHome: "หน้าแรก", navAbout: "เกี่ยวกับ", navSkills: "ทักษะ", navProjects: "โปรเจกต์", navExperience: "ประสบการณ์", navContact: "ติดต่อ",
+      navHome: "หน้าแรก", navAbout: "เกี่ยวกับ", navSkills: "ทักษะ", navProjects: "โปรเจกต์", navCertificates: "ใบรับรอง", navContact: "ติดต่อ",
       heroHello: "สวัสดี, ผมชื่อ", heroViewWork: "ดูผลงานของฉัน", heroContactMe: "ติดต่อฉัน",
       aboutMeTitle: "เกี่ยวกับฉัน", aboutExperience: "ประสบการณ์", aboutYears: "2+ ปีในการพัฒนาเว็บ",
       aboutProjects: "โปรเจกต์", aboutCompletedProjects: "3+ โปรเจกต์ที่เสร็จสมบูรณ์", aboutFocus: "ความชื่นชอบ", aboutFocusText: "เทคโนโลยีเว็บสมัยใหม่",
@@ -106,7 +106,7 @@
 
   const navItems = [
     { id: 'home', key: 'navHome' }, { id: 'about', key: 'navAbout' }, { id: 'skills', key: 'navSkills' },
-    { id: 'projects', key: 'navProjects' }, { id: 'experience', key: 'navExperience' }, { id: 'contact', key: 'navContact' }
+    { id: 'projects', key: 'navProjects' }, { id: 'certificates', key: 'navCertificates' }, { id: 'contact', key: 'navContact' }
   ];
 
   let isVisible = false;
