@@ -8,7 +8,6 @@
   import Experience from './Experience.svelte';
   import Contract from './Contact.svelte';
   import About from './About.svelte';
-  import RhombusCanvas from '$lib/RhombusCanvas.svelte';
   import Certificates from './Certificates.svelte';
   // Portfolio data - ในอนาคตจะโหลดจาก JSON file
 
@@ -94,7 +93,7 @@
       aboutMeTitle: "เกี่ยวกับฉัน", aboutExperience: "ประสบการณ์", aboutYears: "2+ ปีในการพัฒนาเว็บ",
       aboutProjects: "โปรเจกต์", aboutCompletedProjects: "3+ โปรเจกต์ที่เสร็จสมบูรณ์", aboutFocus: "ความชื่นชอบ", aboutFocusText: "เทคโนโลยีเว็บสมัยใหม่",
       skillsTitle: "ทักษะและเทคโนโลยี",
-      projectsTitle: "โปรเจกต์เด่น", projectGithub: "GitHub", projectDemo: "เดโม่",
+      projectsTitle: "โปรเจกต์", projectGithub: "GitHub", projectDemo: "เดโม่",
       experienceTitle: "ประสบการณ์ทำงาน",
       contactTitle: "มาทำงานร่วมกัน",
       contactIntro: "ฉันสนใจโอกาสใหม่ๆ และโปรเจกต์ที่น่าตื่นเต้นอยู่เสมอ มาพูดคุยกันว่าเราจะทำให้ไอเดียของคุณเป็นจริงได้อย่างไร",
@@ -195,14 +194,9 @@
 
 <main class="pt-15">
   <!-- Hero Section with Canvas Background -->
-<section id="home" class="py-32 flex items-center bg-gradient-to-br from-blue-50 to-indigo-100 relative overflow-hidden">
-  <!-- Canvas Background -->
-  <div class="absolute inset-0" style="z-index: 1;">
-    <RhombusCanvas />
-  </div>
-  
+<section id="home" class="py-32 flex items-center bg-gradient-to-br from-blue-50 to-indigo-100 ">
   <!-- Content -->
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center relative bg-white/50 backdrop-blur-sm p-10 rounded-lg shadow-2xl" style="z-index: 2;">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center relative " style="z-index: 2;">
     <div>
       {#if isVisible}
         <h1 
