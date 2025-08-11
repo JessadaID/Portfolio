@@ -14,11 +14,11 @@
   });
 </script>
 <!-- Projects Section -->
-<section id="projects" class="py-16 bg-gray-50">
+<section id="projects" class="py-16 dark:bg-gradient-to-b dark:from-gray-900 dark:to-neutral-900">
   <div class="container mx-auto px-6">
     <!-- Section Header -->
     <div class="text-center mb-16">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{uiStrings[currentLang].projectsTitle}</h2>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 dark:text-white">{uiStrings[currentLang].projectsTitle}</h2>
       <div class="w-20 h-1 bg-blue-600 mx-auto"></div>
     </div>
 
@@ -30,7 +30,7 @@
           class="group"
         >
           <div
-            class="bg-white rounded-2xl shadow-lg"
+            class="bg-transperent"
           >
             <div
               class="flex flex-col lg:flex-row items-stretch min-h-[400px]"
@@ -56,18 +56,18 @@
                 </div>
 
                 <!-- Title -->
-                <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+                <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight dark:text-white">
                   {project.title[currentLang]}
                 </h3>
 
                 <!-- Description -->
-                <p class="text-gray-600 mb-6 text-base lg:text-lg leading-relaxed">
+                <p class="text-gray-600 mb-6 text-base lg:text-lg leading-relaxed dark:text-gray-300">
                   {project.description[currentLang]}
                 </p>
 
                 <!-- Tech Stack -->
                 <div class="mb-8">
-                  <h4 class="text-sm font-semibold text-gray-800 mb-3 uppercase tracking-wider">
+                  <h4 class="text-sm font-semibold text-gray-800 mb-3 uppercase tracking-wider dark:text-white">
                     Technologies
                   </h4>
                   <div class="flex flex-wrap gap-2">
@@ -87,10 +87,10 @@
                 <div class="flex flex-col sm:flex-row gap-4">
                   <a
                     href={project.github}
-                    class="inline-flex items-center justify-center px-6 py-3 
+                    class="inline-flex items-center justify-center px-4 py-2 
                            bg-gray-900 text-white font-medium rounded-lg
                            hover:bg-gray-800 transition-all duration-300
-                           hover:shadow-lg group/btn"
+                           hover:shadow-lg group/btn dark:border-2 "
                            target="_blank"
                   >
                     <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -104,10 +104,10 @@
                   {#if project.demo}
                     <a
                       href={project.demo}
-                      class="inline-flex items-center justify-center px-6 py-3 
+                      class="inline-flex items-center justify-center px-4 py-2 
                              bg-transparent text-blue-600 font-medium rounded-lg
                              border-2 border-blue-600 hover:bg-blue-600 hover:text-white
-                             transition-all duration-300 group/btn"
+                             transition-all duration-300 group/btn dark:border-white dark:text-white dark:hover:text-neutral-900 dark:hover:bg-white"
                              target="_blank"
                     >
                       <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

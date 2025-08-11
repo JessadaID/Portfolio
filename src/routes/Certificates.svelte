@@ -6,9 +6,9 @@
 </script>
 
 <!-- Certificates Section -->
-<section id="certificates" class="py-20 bg-gray-50">
+<section id="certificates" class="py-20 bg-gray-50 dark:bg-neutral-900">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-16">
+    <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-16 dark:text-white">
       {uiStrings[currentLang].certificatesTitle}
     </h2>
   </div>

@@ -9,6 +9,8 @@
   import Contract from './Contact.svelte';
   import About from './About.svelte';
   import Certificates from './Certificates.svelte';
+  import ThemeToggle from '$lib/component/ThemeToggle.svelte';
+  import { theme } from '$lib/stores/theme.js';
   // Portfolio data - ในอนาคตจะโหลดจาก JSON file
 
   let portfolioData = {
@@ -112,6 +114,7 @@
   let activeSection = 'home';
   
   onMount(() => {
+    theme.initTheme();
     isVisible = true;
 
     if (browser) {
@@ -157,10 +160,10 @@
 </svelte:head>
 
 <!-- Navigation -->
-<nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-200">
+<nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-200 dark:bg-slate-900 dark:border-gray-700">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center py-4">
-      <a href="#home" on:click|preventDefault={() => scrollToSection('home')} class="text-xl font-bold text-gray-800">
+      <a href="#home" on:click|preventDefault={() => scrollToSection('home')} class="text-xl font-bold text-gray-800 dark:text-white">
         {portfolioData.profile.name[currentLang]}
       </a>
       <div class="flex items-center">
@@ -168,7 +171,7 @@
           {#each navItems as item}
             <button 
               on:click={() => scrollToSection(item.id)}
-              class="text-gray-600 hover:text-blue-600 transition-colors capitalize
+              class="text-gray-600 hover:text-blue-600 dark:text-gray-100 transition-colors capitalize
                      {activeSection === item.id ? 'text-blue-600 font-medium' : ''}"
             >
               {uiStrings[currentLang][item.key]}
@@ -179,13 +182,16 @@
           <button 
             on:click={() => setLanguage('en')}
             class:font-semibold="{currentLang === 'en'}" class:text-blue-600="{currentLang === 'en'}"
-            class="px-2 py-1 text-sm rounded hover:bg-gray-100 transition-colors"
+            class="px-2 py-1 text-sm rounded hover:bg-gray-100 transition-colors {currentLang === 'en' ? 'dark:text-blue-600' : 'dark:text-gray-100'}"
           >EN</button>
           <button 
             on:click={() => setLanguage('th')}
             class:font-semibold="{currentLang === 'th'}" class:text-blue-600="{currentLang === 'th'}"
-            class="px-2 py-1 text-sm rounded hover:bg-gray-100 transition-colors"
+            class="px-2 py-1 text-sm rounded hover:bg-gray-100 transition-colors {currentLang === 'th' ? 'dark:text-blue-600' : 'dark:text-gray-100'}"
           >TH</button>
+        </div>
+        <div class="mx-4">
+          <ThemeToggle />
         </div>
       </div>
     </div>
@@ -194,27 +200,27 @@
 
 <main class="pt-15">
   <!-- Hero Section with Canvas Background -->
-<section id="home" class="py-32 flex items-center bg-gradient-to-br from-blue-50 to-indigo-100 ">
+<section id="home" class="py-32 flex items-center bg-gradient-to-br from-blue-50 to-indigo-200 dark:bg-gradient-to-b dark:from-slate-900 dark:to-neutral-900">
   <!-- Content -->
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center relative " style="z-index: 2;">
     <div>
       {#if isVisible}
         <h1 
           in:fly="{{ y: 30, duration: 800, easing: quintOut }}" 
-          class="text-4xl md:text-6xl font-bold text-gray-800 mb-4 relative"
+          class="text-4xl md:text-6xl font-bold text-gray-800 mb-4 relative dark:text-white"
         >
           {uiStrings[currentLang].heroHello}<br>
           <span class="text-blue-600">{portfolioData.profile.name[currentLang]}</span>
         </h1>
         <p 
           in:fly="{{ y: 30, duration: 800, delay: 200, easing: quintOut }}"
-          class="text-xl text-gray-600 mb-6 relative"
+          class="text-xl text-gray-600 mb-6 relative dark:text-gray-200"
         >
           {portfolioData.profile.title[currentLang]}
         </p>
         <p 
           in:fly="{{ y: 30, duration: 800, delay: 400, easing: quintOut }}"
-          class="text-gray-500 mb-8 leading-relaxed relative"
+          class="text-gray-500 mb-8 leading-relaxed relative dark:text-gray-400"
         >
           {portfolioData.profile.bio[currentLang]}
         </p>
@@ -225,7 +231,8 @@
           <button 
             on:click={() => scrollToSection('projects')}
             class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 
-                   transition-all duration-300 hover:scale-105 shadow-lg"
+                   transition-all duration-300 hover:scale-105 shadow-lg dark:bg-transparent dark:text-blue-600
+                   dark:border-2 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white"
           >
             {uiStrings[currentLang].heroViewWork}
           </button>
@@ -233,7 +240,7 @@
             on:click={() => scrollToSection('contact')}
             class="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg 
                    hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-lg
-                   bg-white/80 backdrop-blur-sm"
+                   dark:text-white dark:bg-transperent dark:border-2 dark:border-white dark:hover:bg-white dark:hover:text-blue-600"
           >
             {uiStrings[currentLang].heroContactMe}
           </button>
