@@ -390,22 +390,3 @@
         </div>
     {/if}
 </div>
-
-<style>
-    .input-field {
-        @apply px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500;
-    }
-    .btn-primary {
-        @apply bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150 disabled:opacity-50;
-    }
-    .btn-secondary {
-        @apply bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition ease-in-out duration-150 disabled:opacity-50;
-    }
-    .btn-edit {
-        @apply bg-yellow-500 text-white py-1 px-3 rounded-md hover:bg-yellow-600 transition ease-in-out duration-150 disabled:opacity-50;
-    }
-    .btn-delete {
-        @apply bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 transition ease-in-out duration-150 disabled:opacity-50;
-    }
-</style>
-  
