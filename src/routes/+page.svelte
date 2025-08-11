@@ -11,6 +11,7 @@
   import Certificates from './Certificates.svelte';
   import ThemeToggle from '$lib/component/ThemeToggle.svelte';
   import { theme } from '$lib/stores/theme.js';
+  import "../style.css"
   // Portfolio data - ในอนาคตจะโหลดจาก JSON file
 
   let portfolioData = {
