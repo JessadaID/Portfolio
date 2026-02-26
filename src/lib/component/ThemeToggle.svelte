@@ -1,6 +1,6 @@
 <script>
-    import { theme } from '$lib/stores/theme';
-    import { onMount } from 'svelte';
+    import { theme } from "$lib/stores/theme";
+    import { onMount } from "svelte";
 
     onMount(() => {
         theme.initTheme();
@@ -33,7 +33,9 @@
     <!-- Moon Icon (Dark Mode) -->
     <svg
         class="absolute h-5 w-5 text-gray-800 dark:text-gray-200 transition-all duration-300
-               {$theme === 'dark' ? 'rotate-0 scale-100' : '-rotate-90 scale-0'}"
+               {$theme === 'dark'
+            ? 'rotate-0 scale-100'
+            : '-rotate-90 scale-0'}"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
