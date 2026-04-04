@@ -25,8 +25,8 @@
         th: "นักพัฒนาเว็บ Full Stack",
       },
       bio: {
-        en: "The leader is a computer engineering student with an interest in full-stack development. He enjoys building applications from front-end to back-end, loves experimenting with new technologies, and is always ready to learn.",
-        th: "สวัสดีครับ ผมเป็นนักศึกษาวิศวกรรมคอมพิวเตอร์และสนใจ Full-stack Development ชอบทำเว็บแอปตั้งแต่หน้าบ้านถึงหลังบ้าน ชอบลองเทคโนโลยีใหม่ๆ และพร้อมเรียนรู้ตลอดเวลา",
+        en: "Recent Computer Engineering graduate with a strong passion for Full-Stack Development. Enjoy building end-to-end web applications and accustomed to flexible Agile workflows. Highly driven to explore emerging technologies and continuously improve to deliver efficient, high-quality software.",
+        th: "สวัสดีครับ ผมเป็นนักศึกษาจบใหม่สาขาวิศวกรรมคอมพิวเตอร์ผู้มีความหลงใหลในงาน Full-Stack Development สนุกกับการพัฒนาแอปพลิเคชันตั้งแต่หน้าบ้านจนถึงหลังบ้าน คุ้นเคยกับกระบวนการทำงานแบบ Agile ที่เน้นความยืดหยุ่น รักในการเรียนรู้เทคโนโลยีใหม่ๆ และพร้อมพัฒนาตัวเองเพื่อส่งมอบงานที่มีประสิทธิภาพอยู่เสมอ",
       },
       image: "https://avatars.githubusercontent.com/u/113906747?v=4",
       location: {
@@ -49,6 +49,7 @@
           en: "Rajamangala University of Technology Lanna Chiang Mai",
           th: "มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา เชียงใหม่",
         },
+        gpa: { en: "3.87", th: "3.87" },
       },
       {
         period: { en: "2020 - 2022", th: "2563 - 2565" },
@@ -60,6 +61,7 @@
           en: "Chiang Rai Vocational College",
           th: "วิทยาลัยอาชีวศึกษาเชียงราย",
         },
+        gpa: { en: "3.96", th: "3.96" },
       },
     ],
 
@@ -108,9 +110,9 @@
       heroContactMe: "Contact Me",
       aboutMeTitle: "About Me",
       aboutExperience: "Experience",
-      aboutYears: "2+ Years in Web Development",
+      aboutYears: "3+ Years in Web Development",
       aboutProjects: "Projects",
-      aboutCompletedProjects: "3+ Completed Projects",
+      aboutCompletedProjects: "5+ Completed Projects",
       aboutFocus: "Focus",
       aboutFocusText: "Modern Web Technologies",
       skillsTitle: "Skills & Technologies",
@@ -143,9 +145,9 @@
       heroContactMe: "ติดต่อฉัน",
       aboutMeTitle: "เกี่ยวกับฉัน",
       aboutExperience: "ประสบการณ์",
-      aboutYears: "2+ ปีในการพัฒนาเว็บ",
+      aboutYears: "3+ ปีในการพัฒนาเว็บ",
       aboutProjects: "โปรเจกต์",
-      aboutCompletedProjects: "3+ โปรเจกต์ที่เสร็จสมบูรณ์",
+      aboutCompletedProjects: "5+ โปรเจกต์ที่เสร็จสมบูรณ์",
       aboutFocus: "ความชื่นชอบ",
       aboutFocusText: "เทคโนโลยีเว็บสมัยใหม่",
       skillsTitle: "ทักษะและเทคโนโลยี",
@@ -349,7 +351,7 @@
           </div>
         {/if}
       </div>
-      <!-- <div class="flex justify-center relative">
+      <div class="flex justify-center relative">
         {#if isVisible}
           <div
             in:scale={{ duration: 800, delay: 800, easing: quintOut }}
@@ -366,7 +368,7 @@
             ></div>
           </div>
         {/if}
-      </div> -->
+      </div>
     </div>
   </section>
 

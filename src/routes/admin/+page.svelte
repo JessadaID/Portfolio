@@ -26,6 +26,7 @@
         category: "", // Added category
         icon: "",
         proficiency: { th: "", en: "" },
+        tooltip: { th: "", en: "" },
     };
     let editingSkillId = null;
     const skillCategories = [
@@ -79,6 +80,7 @@
             category: "",
             icon: "",
             proficiency: { th: "", en: "" },
+            tooltip: { th: "", en: "" },
         };
         editingSkillId = null;
     }
@@ -235,7 +237,10 @@
 
     function startEditSkill(skillToEdit) {
         editingSkillId = skillToEdit.id;
-        skillForm = { ...skillToEdit };
+        skillForm = {
+            ...skillToEdit,
+            tooltip: skillToEdit.tooltip || { th: "", en: "" },
+        };
         window.scrollTo(0, 0); // Scroll to top to see the form
     }
 
@@ -569,27 +574,55 @@
                             >
                         {/each}
                     </select>
-                    <div class="flex space-x-2">
+                </div>
+                <div>
+                    <label
+                        for="skill-tooltip-th"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Tooltip (Thai)</label
+                    >
+                    <textarea
+                        id="skill-tooltip-th"
+                        rows="2"
+                        bind:value={skillForm.tooltip.th}
+                        class="w-full input-field"
+                        placeholder="คำอธิบายเพิ่มเติมเกี่ยวกับทักษะนี้"
+                    ></textarea>
+                </div>
+                <div>
+                    <label
+                        for="skill-tooltip-en"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Tooltip (English)</label
+                    >
+                    <textarea
+                        id="skill-tooltip-en"
+                        rows="2"
+                        bind:value={skillForm.tooltip.en}
+                        class="w-full input-field"
+                        placeholder="Additional information about this skill"
+                    ></textarea>
+                </div>
+                <div class="flex space-x-2">
+                    <button
+                        type="submit"
+                        class="btn-primary w-full"
+                        disabled={isLoading}
+                    >
+                        {isLoading
+                            ? "Saving..."
+                            : editingSkillId
+                              ? "Update Skill"
+                              : "Add Skill"}
+                    </button>
+                    {#if editingSkillId}
                         <button
-                            type="submit"
-                            class="btn-primary w-full"
-                            disabled={isLoading}
+                            type="button"
+                            on:click={resetSkillForm}
+                            class="btn-secondary w-full"
+                            disabled={isLoading}>Cancel Edit</button
                         >
-                            {isLoading
-                                ? "Saving..."
-                                : editingSkillId
-                                  ? "Update Skill"
-                                  : "Add Skill"}
-                        </button>
-                        {#if editingSkillId}
-                            <button
-                                type="button"
-                                on:click={resetSkillForm}
-                                class="btn-secondary w-full"
-                                disabled={isLoading}>Cancel Edit</button
-                            >
-                        {/if}
-                    </div>
+                    {/if}
                 </div>
             </form>
         </div>
