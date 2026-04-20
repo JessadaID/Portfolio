@@ -19,6 +19,17 @@
     let techInputString = ""; // Separate variable for the comma-separated tech input
     let editingProjectId = null;
 
+    // Experience State
+    let experiences = [];
+    let experienceForm = {
+        company: "",
+        logo: "",
+        position: { th: "", en: "" },
+        period: "",
+        description: { th: "", en: "" },
+    };
+    let editingExperienceId = null;
+
     // Skill State
     let skills = [];
     let skillForm = {
@@ -74,6 +85,17 @@
         editingProjectId = null;
     }
 
+    function resetExperienceForm() {
+        experienceForm = {
+            company: "",
+            logo: "",
+            position: { th: "", en: "" },
+            period: "",
+            description: { th: "", en: "" },
+        };
+        editingExperienceId = null;
+    }
+
     function resetSkillForm() {
         skillForm = {
             name: "",
@@ -90,6 +112,7 @@
             // ลบการตรวจสอบ localStorage ออกไป เพราะเราตรวจสอบจาก server-side session แล้วใน +page.server.js
             loadProjects();
             loadSkills();
+            loadExperiences();
         }
     });
 
@@ -180,6 +203,89 @@
         } catch (error) {
             console.error("Error deleting project:", error);
             alert("Error deleting project.");
+        }
+        isLoading = false;
+    }
+
+    // --- Experience Functions ---
+    async function loadExperiences() {
+        isLoading = true;
+        try {
+            const response = await fetch("/api/experience");
+            if (response.ok) {
+                experiences = await response.json();
+            } else {
+                console.error("Failed to load experiences");
+                alert("Failed to load experiences.");
+            }
+        } catch (error) {
+            console.error("Error loading experiences:", error);
+            alert("Error loading experiences.");
+        }
+        isLoading = false;
+    }
+
+    async function handleSubmitExperience(event) {
+        event.preventDefault();
+        isLoading = true;
+
+        const url = "/api/experience";
+        const method = editingExperienceId ? "PUT" : "POST";
+
+        try {
+            const payload = editingExperienceId
+                ? { id: editingExperienceId, ...experienceForm }
+                : experienceForm;
+            const response = await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                alert(
+                    editingExperienceId
+                        ? "Experience updated successfully!"
+                        : "Experience added successfully!",
+                );
+                resetExperienceForm();
+                loadExperiences();
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message || response.statusText}`);
+            }
+        } catch (error) {
+            console.error("Error submitting experience:", error);
+            alert("An error occurred while submitting the experience.");
+        }
+        isLoading = false;
+    }
+
+    function startEditExperience(experienceToEdit) {
+        editingExperienceId = experienceToEdit.id;
+        experienceForm = { ...experienceToEdit };
+        window.scrollTo(0, 0);
+    }
+
+    async function deleteExperience(experienceId) {
+        if (!confirm("Are you sure you want to delete this experience?"))
+            return;
+        isLoading = true;
+        try {
+            const response = await fetch(`/api/experience`, {
+                method: "DELETE",
+                body: JSON.stringify({ id: experienceId }),
+                headers: { "Content-Type": "application/json" },
+            });
+            if (response.ok) {
+                alert("Experience deleted successfully!");
+                loadExperiences();
+            } else {
+                alert("Failed to delete experience.");
+            }
+        } catch (error) {
+            console.error("Error deleting experience:", error);
+            alert("Error deleting experience.");
         }
         isLoading = false;
     }
@@ -289,6 +395,14 @@
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
             >
                 Manage Skills
+            </button>
+            <button
+                on:click={() => (activeTab = "experiences")}
+                class="{activeTab === 'experiences'
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
+            >
+                Manage Experiences
             </button>
         </nav>
     </div>
@@ -493,6 +607,184 @@
                 </div>
             {:else}
                 <p class="text-gray-500">No projects found.</p>
+            {/each}
+        </div>
+    {/if}
+
+    <!-- Experiences Section -->
+    {#if activeTab === "experiences"}
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">
+                {editingExperienceId ? "Edit Experience" : "Add New Experience"}
+            </h2>
+            <form on:submit={handleSubmitExperience} class="space-y-4">
+                <div>
+                    <label
+                        for="exp-company"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Company Name</label
+                    >
+                    <input
+                        type="text"
+                        id="exp-company"
+                        required
+                        bind:value={experienceForm.company}
+                        class="w-full input-field"
+                        placeholder="e.g. Banana Coding"
+                    />
+                </div>
+                <div>
+                    <label
+                        for="exp-logo"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Company Logo URL</label
+                    >
+                    <input
+                        type="url"
+                        id="exp-logo"
+                        bind:value={experienceForm.logo}
+                        class="w-full input-field"
+                        placeholder="https://example.com/logo.png"
+                    />
+                </div>
+                <div>
+                    <label
+                        for="exp-position-th"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Position (Thai)</label
+                    >
+                    <input
+                        type="text"
+                        id="exp-position-th"
+                        required
+                        bind:value={experienceForm.position.th}
+                        class="w-full input-field"
+                    />
+                </div>
+                <div>
+                    <label
+                        for="exp-position-en"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Position (English)</label
+                    >
+                    <input
+                        type="text"
+                        id="exp-position-en"
+                        required
+                        bind:value={experienceForm.position.en}
+                        class="w-full input-field"
+                    />
+                </div>
+                <div>
+                    <label
+                        for="exp-period"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Period / Duration</label
+                    >
+                    <input
+                        type="text"
+                        id="exp-period"
+                        required
+                        bind:value={experienceForm.period}
+                        class="w-full input-field"
+                        placeholder="e.g. 2023 - Present"
+                    />
+                </div>
+                <div>
+                    <label
+                        for="exp-desc-th"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Description (Thai)</label
+                    >
+                    <textarea
+                        id="exp-desc-th"
+                        rows="4"
+                        required
+                        bind:value={experienceForm.description.th}
+                        class="w-full input-field whitespace-pre-wrap"
+                    ></textarea>
+                </div>
+                <div>
+                    <label
+                        for="exp-desc-en"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Description (English)</label
+                    >
+                    <textarea
+                        id="exp-desc-en"
+                        rows="4"
+                        required
+                        bind:value={experienceForm.description.en}
+                        class="w-full input-field whitespace-pre-wrap"
+                    ></textarea>
+                </div>
+                <div class="flex space-x-2">
+                    <button
+                        type="submit"
+                        class="btn-primary w-full"
+                        disabled={isLoading}
+                    >
+                        {isLoading
+                            ? "Saving..."
+                            : editingExperienceId
+                              ? "Update Experience"
+                              : "Add Experience"}
+                    </button>
+                    {#if editingExperienceId}
+                        <button
+                            type="button"
+                            on:click={resetExperienceForm}
+                            class="btn-secondary w-full"
+                            disabled={isLoading}>Cancel Edit</button
+                        >
+                    {/if}
+                </div>
+            </form>
+        </div>
+
+        <h2 class="text-xl font-semibold mb-4 text-gray-700">
+            Existing Experiences
+        </h2>
+        <div class="space-y-4">
+            {#each experiences as exp (exp.id)}
+                <div
+                    class="bg-white p-4 rounded-lg shadow flex justify-between items-center"
+                >
+                    <div class="flex items-center">
+                        {#if exp.logo}
+                            <img
+                                src={exp.logo}
+                                alt={exp.company}
+                                class="w-10 h-10 mr-4 object-contain"
+                            />
+                        {/if}
+                        <div>
+                            <h3 class="font-semibold text-gray-800">
+                                {exp.position.th || exp.position.en}
+                            </h3>
+                            <p class="text-sm text-gray-600">
+                                {exp.company}
+                            </p>
+                            <p class="text-xs text-gray-500">
+                                {exp.period}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="space-x-2">
+                        <button
+                            on:click={() => startEditExperience(exp)}
+                            class="btn-edit text-sm"
+                            disabled={isLoading}>Edit</button
+                        >
+                        <button
+                            on:click={() => deleteExperience(exp.id)}
+                            class="btn-delete text-sm"
+                            disabled={isLoading}>Delete</button
+                        >
+                    </div>
+                </div>
+            {:else}
+                <p class="text-gray-500">No experiences found.</p>
             {/each}
         </div>
     {/if}

@@ -12,6 +12,7 @@
   import Certificates from "./Certificates.svelte";
   import ThemeToggle from "$lib/component/ThemeToggle.svelte";
   import { theme } from "$lib/stores/theme.js";
+  import ChatWithAi from "$lib/component/ChatWithAi.svelte";
   // Portfolio data - ในอนาคตจะโหลดจาก JSON file
 
   let portfolioData = {
@@ -385,6 +386,8 @@
   <Certificates {uiStrings} {portfolioData} {currentLang} />
 
   <Contract {uiStrings} {portfolioData} {currentLang} />
+
+  <ChatWithAi />
 </main>
 
 <!-- Footer -->
