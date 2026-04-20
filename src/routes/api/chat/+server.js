@@ -1,7 +1,6 @@
 import { db } from "$lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { json } from "@sveltejs/kit";
-import { GROQ_API_KEY } from "$env/static/private";
 
 export async function POST({ request }) {
     try {
@@ -57,7 +56,7 @@ ${projects.map(p => `- ${p.title?.th || p.title?.en || ''}: ${p.description?.th 
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${GROQ_API_KEY}`,
+                'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
