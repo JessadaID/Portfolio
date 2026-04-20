@@ -28,6 +28,12 @@ export async function POST({ request }) {
 - เพศ: ชาย 
 - การศึกษา: ปริญญาตรี คณะวิศวกรรมศาสตร์ สาขาวิชาวิศวกรรมคอมพิวเตอร์ มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา เชียงใหม่ GPA: 3.87
 
+[ช่องทางการติดต่อ]
+- Email: jessada.bo46@gmail.com
+- linkedin: https://www.linkedin.com/in/jessada-boonta/
+- GitHub: https://github.com/JessadaID
+- Tel: 095-123-6881
+
 [ประสบการณ์การทำงาน]
 ${experiences.map(e => `- ${e.company} (${e.period || ''})
     ${e.position?.th || e.position?.en || ''}
