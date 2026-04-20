@@ -58,6 +58,9 @@
                                     <p class="text-gray-500 dark:text-gray-400">
                                         {edu.school[currentLang]}
                                     </p>
+                                    <p class="text-gray-500 dark:text-gray-400">
+                                        GPA: {edu.gpa[currentLang]}
+                                    </p>
                                 </div>
                             </div>
                         </div>
