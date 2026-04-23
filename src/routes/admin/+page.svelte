@@ -10,6 +10,7 @@
     let projectForm = {
         title: { th: "", en: "" },
         description: { th: "", en: "" },
+        learned: { th: "", en: "" },
         image: "",
         github: "",
         demo: "",
@@ -75,6 +76,7 @@
         projectForm = {
             title: { th: "", en: "" },
             description: { th: "", en: "" },
+            learned: { th: "", en: "" },
             image: "",
             github: "",
             demo: "",
@@ -177,6 +179,7 @@
         projectForm = {
             ...projectToEdit,
             featured: projectToEdit.featured || false,
+            learned: projectToEdit.learned || { th: "", en: "" },
         };
         techInputString = projectToEdit.tech.join(", ");
         window.scrollTo(0, 0); // Scroll to top to see the form
@@ -473,6 +476,44 @@
                         bind:value={projectForm.description.en}
                         class="w-full input-field"
                     ></textarea>
+                </div>
+                <!-- Learned fields -->
+                <div class="border-t pt-4 mt-2">
+                    <p class="text-sm font-semibold text-gray-700 mb-3">
+                        💡 สิ่งที่ได้เรียนรู้ (What I Learned) <span
+                            class="font-normal text-gray-400">(optional)</span
+                        >
+                    </p>
+                    <div class="space-y-3">
+                        <div>
+                            <label
+                                for="learned-th"
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                                >สิ่งที่เรียนรู้ (Thai)</label
+                            >
+                            <textarea
+                                id="learned-th"
+                                rows="4"
+                                bind:value={projectForm.learned.th}
+                                class="w-full input-field"
+                                placeholder="เช่น เรียนรู้การใช้ SvelteKit, การออกแบบ API..."
+                            ></textarea>
+                        </div>
+                        <div>
+                            <label
+                                for="learned-en"
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                                >What I Learned (English)</label
+                            >
+                            <textarea
+                                id="learned-en"
+                                rows="4"
+                                bind:value={projectForm.learned.en}
+                                class="w-full input-field"
+                                placeholder="e.g. Learned SvelteKit, API design patterns..."
+                            ></textarea>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label

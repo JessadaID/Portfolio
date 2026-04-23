@@ -9,6 +9,13 @@
   let displayedProjects = [];
   let showAll = false;
 
+  // Track active tab per project: { [projectId]: 'overview' | 'learned' }
+  let activeTabs = {};
+
+  function setProjectTab(projectId, tab) {
+    activeTabs = { ...activeTabs, [projectId]: tab };
+  }
+
   $: if (portfolioData && portfolioData.length > 0) {
     // แยกโปรเจคที่เป็น featured ออกมาเพื่อให้อยู่ด้านบนเสมอ
     const featured = portfolioData.filter((p) => p.featured);
@@ -85,12 +92,60 @@
                   {project.title[currentLang]}
                 </h3>
 
-                <!-- Description -->
-                <p
-                  class="text-gray-600 mb-6 text-base lg:text-md leading-relaxed dark:text-gray-300"
-                >
-                  {project.description[currentLang]}
-                </p>
+                <!-- Description / Learned tab content -->
+                {#if project.learned && (project.learned.th || project.learned.en)}
+                  <!-- Tab bar -->
+                  <div
+                    class="flex border-b border-gray-200 dark:border-gray-700 mb-4"
+                  >
+                    <button
+                      on:click={() =>
+                        setProjectTab(project.id || index, "overview")}
+                      class="px-4 py-2 text-sm font-medium border-b-2 transition-colors
+                             {(activeTabs[project.id || index] ||
+                        'overview') === 'overview'
+                        ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}"
+                    >
+                      {currentLang === "th" ? "ภาพรวม" : "Overview"}
+                    </button>
+                    <button
+                      on:click={() =>
+                        setProjectTab(project.id || index, "learned")}
+                      class="px-4 py-2 text-sm font-medium border-b-2 transition-colors
+                             {(activeTabs[project.id || index] ||
+                        'overview') === 'learned'
+                        ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}"
+                    >
+                      {currentLang === "th"
+                        ? "สิ่งที่เรียนรู้"
+                        : "What I Learned"}
+                    </button>
+                  </div>
+
+                  <!-- Tab content -->
+                  {#if (activeTabs[project.id || index] || "overview") === "overview"}
+                    <p
+                      class="text-gray-600 mb-6 text-base lg:text-md leading-relaxed dark:text-gray-300"
+                    >
+                      {project.description[currentLang]}
+                    </p>
+                  {:else}
+                    <p
+                      class="text-gray-600 mb-6 text-base lg:text-md leading-relaxed dark:text-gray-300 whitespace-pre-wrap"
+                    >
+                      {project.learned[currentLang] || ""}
+                    </p>
+                  {/if}
+                {:else}
+                  <!-- No learned field: show description only -->
+                  <p
+                    class="text-gray-600 mb-6 text-base lg:text-md leading-relaxed dark:text-gray-300"
+                  >
+                    {project.description[currentLang]}
+                  </p>
+                {/if}
 
                 <!-- Tech Stack -->
                 <div class="mb-8">
