@@ -79,12 +79,14 @@
     }
 </script>
 
-<div class="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
+<div
+    class="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 pb-[env(safe-area-inset-bottom)]"
+>
     <!-- Chat Window -->
     {#if showChat}
         <div
             transition:fly={{ y: 20, duration: 300 }}
-            class="bg-white dark:bg-primary border border-primary dark:border-white w-[90vw] sm:w-96 overflow-hidden flex flex-col h-[28rem]"
+            class="bg-white dark:bg-primary border border-primary dark:border-white w-[90vw] sm:w-96 overflow-hidden flex flex-col h-[70vh] max-h-[28rem]"
         >
             <!-- Header -->
             <div

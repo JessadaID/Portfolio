@@ -52,7 +52,7 @@
         >
           <div class="bg-transperent">
             <div
-              class="flex flex-col lg:flex-row items-stretch min-h-[400px]"
+              class="flex flex-col lg:flex-row items-stretch min-h-[250px] md:min-h-[400px]"
               class:lg:flex-row-reverse={index % 2 === 1}
             >
               <!-- Image Container -->
@@ -62,8 +62,8 @@
                 <img
                   src={project.image}
                   alt={project.title[currentLang]}
-                  class="max-w-full max-h-full object-contain transition-transform duration-500
-                         group-hover:scale-105 px-6"
+                  class="max-w-full object-contain transition-transform duration-500
+                         group-hover:scale-105 px-6 max-h-[220px] lg:max-h-full"
                 />
                 <!-- Overlay Gradient -->
                 <div

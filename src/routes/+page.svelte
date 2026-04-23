@@ -183,6 +183,15 @@
 
   let isVisible = false;
   let activeSection = "home";
+  let mobileMenuOpen = false;
+
+  function toggleMobileMenu() {
+    mobileMenuOpen = !mobileMenuOpen;
+  }
+
+  function closeMobileMenu() {
+    mobileMenuOpen = false;
+  }
 
   onMount(() => {
     theme.initTheme();
@@ -217,6 +226,7 @@
     document.getElementById(sectionId)?.scrollIntoView({
       behavior: "smooth",
     });
+    closeMobileMenu();
   }
 
   function setLanguage(lang) {
@@ -247,6 +257,7 @@
 >
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center py-2">
+      <!-- Logo / Name -->
       <a
         href="#home"
         on:click|preventDefault={() => scrollToSection("home")}
@@ -254,8 +265,11 @@
       >
         {portfolioData.profile.name[currentLang]}
       </a>
-      <div class="flex items-center">
-        <div class="hidden md:flex space-x-8 text-sm">
+
+      <!-- Right side controls -->
+      <div class="flex items-center gap-2">
+        <!-- Desktop nav links -->
+        <div class="hidden md:flex space-x-6 text-sm">
           {#each navItems as item}
             <button
               on:click={() => scrollToSection(item.id)}
@@ -268,7 +282,9 @@
             </button>
           {/each}
         </div>
-        <div class="flex space-x-1 ml-4">
+
+        <!-- Language switcher -->
+        <div class="flex space-x-1">
           <button
             on:click={() => setLanguage("en")}
             class:font-semibold={currentLang === "en"}
@@ -288,27 +304,90 @@
               : 'dark:text-gray-100'}">TH</button
           >
         </div>
-        <div class="mx-4">
-          <ThemeToggle />
-        </div>
+
+        <!-- Theme Toggle -->
+        <ThemeToggle />
+
+        <!-- Hamburger button (mobile only) -->
+        <button
+          aria-label="Toggle mobile menu"
+          on:click={toggleMobileMenu}
+          class="md:hidden p-2 rounded text-gray-600 hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400 transition-colors"
+        >
+          {#if mobileMenuOpen}
+            <!-- X icon -->
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          {:else}
+            <!-- Hamburger icon -->
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          {/if}
+        </button>
       </div>
     </div>
+
+    <!-- Mobile dropdown menu -->
+    {#if mobileMenuOpen}
+      <div
+        class="md:hidden border-t border-gray-200 dark:border-gray-700 py-3 flex flex-col gap-1"
+      >
+        {#each navItems as item}
+          <button
+            on:click={() => scrollToSection(item.id)}
+            class="text-left px-3 py-2 text-sm rounded text-gray-600 hover:text-blue-600 hover:bg-gray-50
+                   dark:text-gray-100 dark:hover:text-blue-400 dark:hover:bg-gray-800 transition-colors
+                   {activeSection === item.id
+              ? 'text-blue-600 font-medium'
+              : ''}"
+          >
+            {uiStrings[currentLang][item.key]}
+          </button>
+        {/each}
+      </div>
+    {/if}
   </div>
 </nav>
 
 <main class="pt-10">
-  <!-- Hero Section with Canvas Background -->
-  <section id="home" class="py-20 flex items-center bg-white dark:bg-primary">
+  <!-- Hero Section -->
+  <section
+    id="home"
+    class="py-12 md:py-20 flex items-center bg-white dark:bg-primary"
+  >
     <!-- Content -->
     <div
-      class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center relative"
+      class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 md:gap-12 items-center relative w-full"
       style="z-index: 2;"
     >
-      <div>
+      <!-- Text content - order 2 on mobile (below image) -->
+      <div class="order-2 md:order-1 text-center md:text-left">
         {#if isVisible}
           <h1
             in:fly={{ y: 30, duration: 800, easing: quintOut }}
-            class="text-3xl md:text-5xl font-bold text-gray-800 mb-4 relative dark:text-white"
+            class="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-800 mb-4 relative dark:text-white"
           >
             {uiStrings[currentLang].heroHello}<br />
             <span class="text-blue-600"
@@ -317,42 +396,44 @@
           </h1>
           <p
             in:fly={{ y: 30, duration: 800, delay: 200, easing: quintOut }}
-            class="text-xl text-gray-600 mb-6 relative dark:text-gray-200"
+            class="text-lg md:text-xl text-gray-600 mb-4 relative dark:text-gray-200"
           >
             {portfolioData.profile.title[currentLang]}
           </p>
           <p
             in:fly={{ y: 30, duration: 800, delay: 400, easing: quintOut }}
-            class="text-gray-500 mb-8 leading-relaxed relative dark:text-gray-400"
+            class="text-gray-500 mb-6 leading-relaxed relative dark:text-gray-400 text-sm md:text-base"
           >
             {portfolioData.profile.bio[currentLang]}
           </p>
           <div
             in:fly={{ y: 30, duration: 800, delay: 600, easing: quintOut }}
-            class="flex space-x-4 relative"
+            class="flex flex-wrap justify-center md:justify-start gap-3 relative"
           >
             <button
               on:click={() => scrollToSection("projects")}
-              class="bg-blue-600 text-white px-6 py-3 hover:bg-blue-700
+              class="bg-blue-600 text-white px-5 py-2.5 hover:bg-blue-700
                    transition-all duration-300 shadow-lg dark:bg-transparent dark:text-blue-600
                    border-2 border-blue-600
-                   dark:border-2 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white"
+                   dark:border-2 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white text-sm md:text-base"
             >
               {uiStrings[currentLang].heroViewWork}
             </button>
             <button
               on:click={() => scrollToSection("contact")}
-              class="border border-blue-600 text-blue-600 px-6 py-3
+              class="border text-blue-600 px-5 py-2.5
                    hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-lg
                    border-2 border-blue-600
-                   dark:text-white dark:bg-transperent dark:border-2 dark:border-white dark:hover:bg-white dark:hover:text-blue-600"
+                   dark:text-white dark:bg-transperent dark:border-2 dark:border-white dark:hover:bg-white dark:hover:text-blue-600 text-sm md:text-base"
             >
               {uiStrings[currentLang].heroContactMe}
             </button>
           </div>
         {/if}
       </div>
-      <div class="flex justify-center relative">
+
+      <!-- Profile image - order 1 on mobile (above text) -->
+      <div class="order-1 md:order-2 flex justify-center relative">
         {#if isVisible}
           <div
             in:scale={{ duration: 800, delay: 800, easing: quintOut }}
@@ -361,11 +442,11 @@
             <img
               src={portfolioData.profile.image}
               alt={portfolioData.profile.name[currentLang]}
-              class="w-80 h-80 rounded-full object-cover shadow-2xl border-8 border-white relative"
+              class="w-40 h-40 sm:w-56 sm:h-56 md:w-80 md:h-80 rounded-full object-cover shadow-2xl border-4 md:border-8 border-white relative"
               style="z-index: 3;"
             />
             <div
-              class="absolute inset-0 w-80 h-80 rounded-full bg-blue-400/20 blur-2xl -z-10"
+              class="absolute inset-0 w-40 h-40 sm:w-56 sm:h-56 md:w-80 md:h-80 rounded-full bg-blue-400/20 blur-2xl -z-10"
             ></div>
           </div>
         {/if}

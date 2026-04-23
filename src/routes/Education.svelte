@@ -15,7 +15,55 @@
                 {uiStrings[currentLang].educationTitle}
             </h2>
 
-            <div class="relative max-w-4xl mx-auto">
+            <!-- Mobile: left-aligned vertical timeline -->
+            <div class="md:hidden relative max-w-2xl mx-auto">
+                <!-- Left vertical line -->
+                <div
+                    class="absolute left-4 top-0 w-0.5 h-full bg-gray-200 dark:bg-gray-700"
+                ></div>
+                <div class="space-y-8 pl-12">
+                    {#each portfolioData.education as edu, index}
+                        <!-- Left dot -->
+                        <div class="relative">
+                            <div
+                                class="absolute -left-10 top-16 w-4 h-4 rounded-full bg-gray-800 dark:bg-white z-10"
+                            ></div>
+                            <div
+                                in:fly={{
+                                    y: 20,
+                                    duration: 600,
+                                    delay: index * 200,
+                                }}
+                                class="bg-white dark:bg-primary border border-gray-200 dark:border-gray-800 p-5 shadow-sm"
+                            >
+                                <span
+                                    class="text-sm font-medium text-blue-600 dark:text-blue-400 block mb-1"
+                                >
+                                    {edu.period[currentLang]}
+                                </span>
+                                <h3
+                                    class="text-lg font-bold text-gray-800 dark:text-white mb-1"
+                                >
+                                    {edu.degree[currentLang]}
+                                </h3>
+                                <p
+                                    class="text-gray-500 dark:text-gray-400 text-sm"
+                                >
+                                    {edu.school[currentLang]}
+                                </p>
+                                <p
+                                    class="text-gray-500 dark:text-gray-400 text-sm"
+                                >
+                                    GPA: {edu.gpa[currentLang]}
+                                </p>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+
+            <!-- Desktop: center two-sided timeline -->
+            <div class="hidden md:block relative max-w-4xl mx-auto">
                 <!-- Vertical Line -->
                 <div
                     class="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-gray-200 dark:bg-gray-700"
