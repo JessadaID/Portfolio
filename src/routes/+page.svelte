@@ -93,6 +93,19 @@
           th: "หลักสูตรอบรมการใช้ AI ช่วยในการวิจัยและพัฒนาอย่างครอบคลุม และการใช้งาน AI ให้เกิดประโยชน์สูงสุด",
         },
       },
+      {
+        title: {
+          en: "AWS Lambda Training",
+          th: "อบรมการใช้ AWS Lambda",
+        },
+        issuer: "AWS",
+        date: "18/07/2025",
+        link: "./AWS_Lamda.jpg",
+        description: {
+          en: "Training course on how to use AWS Lambda to build and deploy serverless applications.",
+          th: "หลักสูตรอบรมการใช้ AWS Lambda ในการสร้างและปรับใช้แอปพลิเคชันแบบไร้เซิร์ฟเวอร์",
+        },
+      },
     ],
   };
 
