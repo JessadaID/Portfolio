@@ -99,7 +99,7 @@
           th: "อบรมการใช้ AWS Lambda",
         },
         issuer: "AWS",
-        date: "18/07/2025",
+        date: "08/05/2026",
         link: "./AWS_Lamda.jpg",
         description: {
           en: "Training course on how to use AWS Lambda to build and deploy serverless applications.",
