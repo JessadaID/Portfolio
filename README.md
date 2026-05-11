@@ -15,29 +15,6 @@
 - [Firebase](https://firebase.google.com/) - Database Nosql ใช้สำหรับเก็บข้อมูล
 ---
 
-## 🛠 วิธีการติดตั้งและใช้งาน
-
-1. **โคลนโปรเจกต์:**
-
-   ```bash
-   git clone https://github.com/JessadaID/Portfolio.git
-   cd Portfolio
-   ```
-
-2. **ติดตั้ง dependencies:**
-
-   ```bash
-   npm install
-   ```
-
-3. **เริ่มต้นเซิร์ฟเวอร์สำหรับพัฒนา:**
-  
-   ```bash
-   npm run dev
-   ```
-
-4. **เปิดเบราว์เซอร์ที่ http://localhost:5173 เพื่อดูเว็บไซต์**
-
 ## 📁 โครงสร้างโปรเจกต์
 ```csharp
 Portfolio/
