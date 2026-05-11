@@ -69,6 +69,19 @@
     certificates: [
       {
         title: {
+          en: "AWS Lambda Foundation",
+          th: "AWS Lambda Foundation",
+        },
+        issuer: "AWS",
+        date: "08/05/2026",
+        link: "./AWS_Lamda.jpg",
+        description: {
+          en: "Training course on how to use AWS Lambda to build and deploy serverless applications.",
+          th: "หลักสูตรอบรมการใช้ AWS Lambda ในการสร้างและปรับใช้แอปพลิเคชันแบบไร้เซิร์ฟเวอร์",
+        },
+      },
+      {
+        title: {
           en: "Creating web applications with HTML, CSS, JavaScript",
           th: "การสร้างเว็บแอพพลิเคชัน ด้วย HTML, CSS, JavaScript",
         },
@@ -95,15 +108,15 @@
       },
       {
         title: {
-          en: "AWS Lambda Training",
-          th: "อบรมการใช้ AWS Lambda",
+          en: "IC3 Digital Literacy GS6 (Level 1)",
+          th: "IC3 Digital Literacy GS6 (Level 1)",
         },
-        issuer: "AWS",
-        date: "08/05/2026",
-        link: "./AWS_Lamda.jpg",
+        issuer: "Certiport",
+        date: "07/08/2024",
+        link: "./Cert_ic3.jpg",
         description: {
-          en: "Training course on how to use AWS Lambda to build and deploy serverless applications.",
-          th: "หลักสูตรอบรมการใช้ AWS Lambda ในการสร้างและปรับใช้แอปพลิเคชันแบบไร้เซิร์ฟเวอร์",
+          en: "Certified in IC3 Digital Literacy GS6 Level 1, demonstrating proficiency in key digital competencies including content creation, information management, online safety, and effective digital collaboration based on international standards.",
+          th: "ใบรับรองมาตรฐานสากลด้านทักษะดิจิทัล (IC3 GS6) ครอบคลุมความรู้พื้นฐานด้านเทคโนโลยี, การสร้างสรรค์เนื้อหาดิจิทัล, การสื่อสารออนไลน์อย่างปลอดภัย และการบริหารจัดการข้อมูลอย่างเป็นระบบตามมาตรฐาน Digital Literacy ระดับโลก",
         },
       },
     ],
