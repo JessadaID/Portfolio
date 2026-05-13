@@ -26,13 +26,13 @@
         th: "นักพัฒนาเว็บ Full Stack",
       },
       bio: {
-        en: "Recent Computer Engineering graduate with a strong passion for Full-Stack Development. Enjoy building end-to-end web applications and accustomed to flexible Agile workflows. Highly driven to explore emerging technologies and continuously improve to deliver efficient, high-quality software.",
-        th: "สวัสดีครับ ผมเป็นนักศึกษาจบใหม่สาขาวิศวกรรมคอมพิวเตอร์ผู้มีความหลงใหลในงาน Full-Stack Development สนุกกับการพัฒนาแอปพลิเคชันตั้งแต่หน้าบ้านจนถึงหลังบ้าน คุ้นเคยกับกระบวนการทำงานแบบ Agile ที่เน้นความยืดหยุ่น รักในการเรียนรู้เทคโนโลยีใหม่ๆ และพร้อมพัฒนาตัวเองเพื่อส่งมอบงานที่มีประสิทธิภาพอยู่เสมอ",
+        en: "Hello, I am a recent Computer Engineering graduate with a passion for Full-Stack Development. I enjoy building applications from the ground up, covering both Front-End and Back-End. I am well-versed in Agile methodologies and value flexibility in the workplace. I have a growth mindset, always eager to learn new technologies and committed to delivering high-quality results.",
+        th: "สวัสดีครับ ผมเป็นนักศึกษาจบใหม่สาขาวิศวกรรมคอมพิวเตอร์ ผมรักในการพัฒนาเว็บไซต์และแอปพลิเคชันแบบ Full-Stack Development ผมชอบพัฒนาแอปพลิเคชันตั้งแต่ Front-End จน Back-End และคุ้นเคยการทำงานแบบ Agile ที่เน้นความยืดหยุ่น ผมชอบเรียนรู้เทคโนโลยีใหม่ๆ และพร้อมพัฒนาตัวเองเพื่อให้งานออกมาดีเสมอครับ",
       },
       image: "https://avatars.githubusercontent.com/u/113906747?v=4",
       location: {
-        en: "96 moo 7 mealoy thoeng Chiang Rai, Thailand",
-        th: "96 หมู่ 7 ต.แม่ลอย อ.เทิง จ.เชียงราย, ประเทศไทย",
+        en: "Chiang Rai, Thailand",
+        th: "จ.เชียงราย, ประเทศไทย",
       },
       email: "jessada.bo46@gmail.com",
       github: "https://github.com/JessadaID",
