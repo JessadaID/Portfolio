@@ -2,23 +2,32 @@
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import { browser } from "$app/environment";
+    import { marked } from "marked";
 
-    let activeTab = "projects"; // 'projects' or 'skills'
+    let activeTab = "projects"; // 'projects' | 'skills' | 'experiences'
 
+    // --- Markdown editor modal state ---
+    let markdownModalOpen = false;
+    let markdownLang = "th"; // which language is being edited: 'th' | 'en'
     // Project State
     let projects = [];
     let projectForm = {
         title: { th: "", en: "" },
         description: { th: "", en: "" },
         learned: { th: "", en: "" },
+        detailContent: { th: "", en: "" },
         image: "",
         github: "",
         demo: "",
         tech: [],
         featured: false,
     };
-    let techInputString = ""; // Separate variable for the comma-separated tech input
+    let techInputString = ""; // Comma-separated tech string
     let editingProjectId = null;
+
+    // State for insert-image helper
+    let insertImageUrl = "";
+    let insertImageAlt = "";
 
     // Experience State
     let experiences = [];
@@ -35,11 +44,13 @@
     let skills = [];
     let skillForm = {
         name: "",
-        category: "", // Added category
+        category: "",
         icon: "",
         proficiency: { th: "", en: "" },
         tooltip: { th: "", en: "" },
     };
+    // Use a string key for proficiency dropdown to avoid object-reference mismatch
+    let selectedProficiencyKey = "";
     let editingSkillId = null;
     const skillCategories = [
         { value: "Frontend", label: "Frontend" },
@@ -50,23 +61,12 @@
         { value: "Tools", label: "Tools & Others" },
     ];
 
+    // Map proficiency en label -> bilingual object
     const proficiencyLevels = [
-        {
-            value: { th: "เริ่มต้น", en: "Beginner" },
-            label: { en: "Beginner", th: "เริ่มต้น" },
-        },
-        {
-            value: { th: "ระดับกลาง", en: "Intermediate" },
-            label: { en: "Intermediate", th: "ระดับกลาง" },
-        },
-        {
-            value: { th: "ระดับสูง", en: "Advanced" },
-            label: { en: "Advanced", th: "ระดับสูง" },
-        },
-        {
-            value: { th: "ผู้เชี่ยวชาญ", en: "Expert" },
-            label: { en: "Expert", th: "ผู้เชี่ยวชาญ" },
-        },
+        { key: "Beginner",     value: { th: "เริ่มต้น",    en: "Beginner" } },
+        { key: "Intermediate", value: { th: "ระดับกลาง",  en: "Intermediate" } },
+        { key: "Advanced",     value: { th: "ระดับสูง",   en: "Advanced" } },
+        { key: "Expert",       value: { th: "ผู้เชี่ยวชาญ", en: "Expert" } },
     ];
 
     let isLoading = false;
@@ -77,6 +77,7 @@
             title: { th: "", en: "" },
             description: { th: "", en: "" },
             learned: { th: "", en: "" },
+            detailContent: { th: "", en: "" },
             image: "",
             github: "",
             demo: "",
@@ -84,9 +85,50 @@
             featured: false,
         };
         techInputString = "";
+        insertImageUrl = "";
+        insertImageAlt = "";
         editingProjectId = null;
     }
 
+    // Render markdown for live preview
+    function renderMarkdown(text) {
+        if (!text)
+            return "<p class='text-gray-400 italic'>Preview will appear here...</p>";
+        return marked.parse(text);
+    }
+
+    /**
+     * Insert ![alt](url) at the current cursor position in the active markdown textarea.
+     * Falls back to appending at the end if no cursor info is available.
+     */
+    function insertImageToMarkdown() {
+        if (!insertImageUrl.trim()) return;
+
+        const syntax = `\n![${insertImageAlt || "รูปภาพ"}](${insertImageUrl.trim()})\n`;
+        const field = markdownLang === "th" ? "th" : "en";
+        const textareaId = markdownLang === "th" ? "detail-th" : "detail-en";
+        const el = document.getElementById(textareaId);
+
+        if (el) {
+            const start = el.selectionStart ?? el.value.length;
+            const end = el.selectionEnd ?? el.value.length;
+            const before = el.value.substring(0, start);
+            const after = el.value.substring(end);
+            projectForm.detailContent[field] = before + syntax + after;
+            // Restore focus and move cursor after inserted text
+            setTimeout(() => {
+                el.focus();
+                const pos = start + syntax.length;
+                el.setSelectionRange(pos, pos);
+            }, 10);
+        } else {
+            // Fallback: append to end
+            projectForm.detailContent[field] += syntax;
+        }
+
+        insertImageUrl = "";
+        insertImageAlt = "";
+    }
     function resetExperienceForm() {
         experienceForm = {
             company: "",
@@ -106,6 +148,7 @@
             proficiency: { th: "", en: "" },
             tooltip: { th: "", en: "" },
         };
+        selectedProficiencyKey = "";
         editingSkillId = null;
     }
 
@@ -180,9 +223,12 @@
             ...projectToEdit,
             featured: projectToEdit.featured || false,
             learned: projectToEdit.learned || { th: "", en: "" },
+            detailContent: projectToEdit.detailContent || { th: "", en: "" },
         };
         techInputString = projectToEdit.tech.join(", ");
-        window.scrollTo(0, 0); // Scroll to top to see the form
+        insertImageUrl = "";
+        insertImageAlt = "";
+        window.scrollTo(0, 0);
     }
 
     async function deleteProject(projectId) {
@@ -315,6 +361,10 @@
         event.preventDefault();
         isLoading = true;
 
+        // Resolve proficiency object from selected key
+        const profLevel = proficiencyLevels.find((l) => l.key === selectedProficiencyKey);
+        if (profLevel) skillForm.proficiency = profLevel.value;
+
         const url = "/api/skill";
         const method = editingSkillId ? "PUT" : "POST";
 
@@ -350,7 +400,12 @@
             ...skillToEdit,
             tooltip: skillToEdit.tooltip || { th: "", en: "" },
         };
-        window.scrollTo(0, 0); // Scroll to top to see the form
+        // Match the stored proficiency object to its key by 'en' value
+        const match = proficiencyLevels.find(
+            (l) => l.value.en === (skillToEdit.proficiency?.en ?? "")
+        );
+        selectedProficiencyKey = match ? match.key : "";
+        window.scrollTo(0, 0);
     }
 
     async function deleteSkill(skillId) {
@@ -376,633 +431,649 @@
     }
 </script>
 
-<div class="container mx-auto p-4 md:p-8 max-w-2xl">
-    <a href="../" class="text-blue-700">Home</a>
-    <h1 class="text-3xl font-bold my-6 text-gray-800">Admin Panel</h1>
+<!-- Admin Layout -->
+<div class="h-screen bg-gray-50 flex overflow-hidden">
 
-    <!-- Tab Navigation -->
-    <div class="mb-6 border-b border-gray-200">
-        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-            <button
-                on:click={() => (activeTab = "projects")}
-                class="{activeTab === 'projects'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-            >
-                Manage Projects
-            </button>
-            <button
-                on:click={() => (activeTab = "skills")}
-                class="{activeTab === 'skills'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-            >
-                Manage Skills
-            </button>
-            <button
-                on:click={() => (activeTab = "experiences")}
-                class="{activeTab === 'experiences'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-            >
-                Manage Experiences
-            </button>
+    <!-- Sidebar — fixed height, sticky -->
+    <aside class="w-52 shrink-0 bg-white border-r border-gray-200 flex flex-col h-full">
+        <div class="px-5 py-5 border-b border-gray-100">
+            <a href="/" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+                &larr; Back to site
+            </a>
+            <h1 class="text-base font-semibold text-gray-800 mt-1">Admin Panel</h1>
+        </div>
+        <nav class="flex-1 py-4 px-3 space-y-1">
+            {#each [
+                { key: "projects", label: "Projects" },
+                { key: "skills",   label: "Skills" },
+                { key: "experiences", label: "Experiences" },
+            ] as tab}
+                <button
+                    on:click={() => (activeTab = tab.key)}
+                    class="w-full text-left px-3 py-2 rounded text-sm transition-colors
+                           {activeTab === tab.key
+                               ? 'bg-gray-900 text-white font-medium'
+                               : 'text-gray-600 hover:bg-gray-100'}"
+                >
+                    {tab.label}
+                </button>
+            {/each}
         </nav>
-    </div>
+    </aside>
 
-    {#if isLoading}
-        <p class="text-center text-gray-500">Loading data...</p>
-    {/if}
+    <!-- Main content -->
+    <main class="flex-1 overflow-y-auto p-6 lg:p-8">
 
-    <!-- Projects Section -->
-    {#if activeTab === "projects"}
-        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h2 class="text-xl font-semibold mb-4 text-gray-700">
-                {editingProjectId ? "Edit Project" : "Add New Project"}
-            </h2>
-            <form on:submit={handleSubmitProject} class="space-y-4">
-                <div>
-                    <label
-                        for="title-th"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Title (Thai)</label
-                    >
-                    <input
-                        type="text"
-                        id="title-th"
-                        required
-                        bind:value={projectForm.title.th}
-                        class="w-full input-field"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="title-en"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Title (English)</label
-                    >
-                    <input
-                        type="text"
-                        id="title-en"
-                        required
-                        bind:value={projectForm.title.en}
-                        class="w-full input-field"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="description-th"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Description (Thai)</label
-                    >
-                    <textarea
-                        id="description-th"
-                        rows="3"
-                        required
-                        bind:value={projectForm.description.th}
-                        class="w-full input-field"
-                    ></textarea>
-                </div>
-                <div>
-                    <label
-                        for="description-en"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Description (English)</label
-                    >
-                    <textarea
-                        id="description-en"
-                        rows="3"
-                        required
-                        bind:value={projectForm.description.en}
-                        class="w-full input-field"
-                    ></textarea>
-                </div>
-                <!-- Learned fields -->
-                <div class="border-t pt-4 mt-2">
-                    <p class="text-sm font-semibold text-gray-700 mb-3">
-                        💡 สิ่งที่ได้เรียนรู้ (What I Learned) <span
-                            class="font-normal text-gray-400">(optional)</span
-                        >
-                    </p>
-                    <div class="space-y-3">
-                        <div>
-                            <label
-                                for="learned-th"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                                >สิ่งที่เรียนรู้ (Thai)</label
-                            >
-                            <textarea
-                                id="learned-th"
-                                rows="4"
-                                bind:value={projectForm.learned.th}
-                                class="w-full input-field"
-                                placeholder="เช่น เรียนรู้การใช้ SvelteKit, การออกแบบ API..."
-                            ></textarea>
-                        </div>
-                        <div>
-                            <label
-                                for="learned-en"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                                >What I Learned (English)</label
-                            >
-                            <textarea
-                                id="learned-en"
-                                rows="4"
-                                bind:value={projectForm.learned.en}
-                                class="w-full input-field"
-                                placeholder="e.g. Learned SvelteKit, API design patterns..."
-                            ></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <label
-                        for="image"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Image URL</label
-                    >
-                    <input
-                        type="text"
-                        id="image"
-                        bind:value={projectForm.image}
-                        required
-                        class="w-full input-field"
-                        placeholder="https://example.com/image.png"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="github"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >GitHub URL</label
-                    >
-                    <input
-                        type="url"
-                        id="github"
-                        bind:value={projectForm.github}
-                        class="w-full input-field"
-                        placeholder="https://github.com/user/repo"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="demo"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Demo URL</label
-                    >
-                    <input
-                        type="url"
-                        id="demo"
-                        bind:value={projectForm.demo}
-                        class="w-full input-field"
-                        placeholder="https://example.com/demo"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="tech"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Technologies (comma-separated)</label
-                    >
-                    <input
-                        type="text"
-                        id="tech"
-                        placeholder="e.g., Svelte, Tailwind CSS, Node.js"
-                        bind:value={techInputString}
-                        required
-                        class="w-full input-field"
-                    />
-                </div>
-                <div class="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        id="featured"
-                        bind:checked={projectForm.featured}
-                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <label
-                        for="featured"
-                        class="text-sm font-medium text-gray-700"
-                    >
-                        แสดงในหน้าหลัก (Show on main page - Max 3 recommended)
-                    </label>
-                </div>
-                <div class="flex space-x-2">
-                    <button
-                        type="submit"
-                        class="btn-primary w-full"
-                        disabled={isLoading}
-                    >
-                        {isLoading
-                            ? "Saving..."
-                            : editingProjectId
-                              ? "Update Project"
-                              : "Add Project"}
-                    </button>
-                    {#if editingProjectId}
-                        <button
-                            type="button"
-                            on:click={resetProjectForm}
-                            class="btn-secondary w-full"
-                            disabled={isLoading}>Cancel Edit</button
-                        >
-                    {/if}
-                </div>
-            </form>
-        </div>
+        {#if isLoading}
+            <div class="flex items-center gap-2 text-sm text-gray-500 mb-4">
+                <span class="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                Loading...
+            </div>
+        {/if}
 
-        <h2 class="text-xl font-semibold mb-4 text-gray-700">
-            Existing Projects
-        </h2>
-        <div class="space-y-4">
-            {#each projects as project (project.id)}
-                <div
-                    class="bg-white p-4 rounded-lg shadow flex justify-between items-center"
-                >
-                    <div>
-                        <h3 class="font-semibold text-gray-800">
-                            {project.title.en || project.title.th}
-                            {#if project.featured}
-                                <span
-                                    class="ml-2 px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full"
-                                    >Featured</span
-                                >
-                            {/if}
-                        </h3>
-                        <p class="text-sm text-gray-500">
-                            {project.tech.join(", ")}
-                        </p>
-                    </div>
-                    <div class="space-x-2">
-                        <button
-                            on:click={() => startEditProject(project)}
-                            class="btn-edit text-sm"
-                            disabled={isLoading}>Edit</button
-                        >
-                        <button
-                            on:click={() => deleteProject(project.id)}
-                            class="btn-delete text-sm"
-                            disabled={isLoading}>Delete</button
-                        >
-                    </div>
-                </div>
-            {:else}
-                <p class="text-gray-500">No projects found.</p>
-            {/each}
-        </div>
-    {/if}
-
-    <!-- Experiences Section -->
-    {#if activeTab === "experiences"}
-        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h2 class="text-xl font-semibold mb-4 text-gray-700">
-                {editingExperienceId ? "Edit Experience" : "Add New Experience"}
-            </h2>
-            <form on:submit={handleSubmitExperience} class="space-y-4">
-                <div>
-                    <label
-                        for="exp-company"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Company Name</label
-                    >
-                    <input
-                        type="text"
-                        id="exp-company"
-                        required
-                        bind:value={experienceForm.company}
-                        class="w-full input-field"
-                        placeholder="e.g. Banana Coding"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="exp-logo"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Company Logo URL</label
-                    >
-                    <input
-                        type="url"
-                        id="exp-logo"
-                        bind:value={experienceForm.logo}
-                        class="w-full input-field"
-                        placeholder="https://example.com/logo.png"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="exp-position-th"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Position (Thai)</label
-                    >
-                    <input
-                        type="text"
-                        id="exp-position-th"
-                        required
-                        bind:value={experienceForm.position.th}
-                        class="w-full input-field"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="exp-position-en"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Position (English)</label
-                    >
-                    <input
-                        type="text"
-                        id="exp-position-en"
-                        required
-                        bind:value={experienceForm.position.en}
-                        class="w-full input-field"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="exp-period"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Period / Duration</label
-                    >
-                    <input
-                        type="text"
-                        id="exp-period"
-                        required
-                        bind:value={experienceForm.period}
-                        class="w-full input-field"
-                        placeholder="e.g. 2023 - Present"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="exp-desc-th"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Description (Thai)</label
-                    >
-                    <textarea
-                        id="exp-desc-th"
-                        rows="4"
-                        required
-                        bind:value={experienceForm.description.th}
-                        class="w-full input-field whitespace-pre-wrap"
-                    ></textarea>
-                </div>
-                <div>
-                    <label
-                        for="exp-desc-en"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Description (English)</label
-                    >
-                    <textarea
-                        id="exp-desc-en"
-                        rows="4"
-                        required
-                        bind:value={experienceForm.description.en}
-                        class="w-full input-field whitespace-pre-wrap"
-                    ></textarea>
-                </div>
-                <div class="flex space-x-2">
-                    <button
-                        type="submit"
-                        class="btn-primary w-full"
-                        disabled={isLoading}
-                    >
-                        {isLoading
-                            ? "Saving..."
-                            : editingExperienceId
-                              ? "Update Experience"
-                              : "Add Experience"}
-                    </button>
-                    {#if editingExperienceId}
-                        <button
-                            type="button"
-                            on:click={resetExperienceForm}
-                            class="btn-secondary w-full"
-                            disabled={isLoading}>Cancel Edit</button
-                        >
-                    {/if}
-                </div>
-            </form>
-        </div>
-
-        <h2 class="text-xl font-semibold mb-4 text-gray-700">
-            Existing Experiences
-        </h2>
-        <div class="space-y-4">
-            {#each experiences as exp (exp.id)}
-                <div
-                    class="bg-white p-4 rounded-lg shadow flex justify-between items-center"
-                >
-                    <div class="flex items-center">
-                        {#if exp.logo}
-                            <img
-                                src={exp.logo}
-                                alt={exp.company}
-                                class="w-10 h-10 mr-4 object-contain"
-                            />
+        <!-- ==================== PROJECTS ==================== -->
+        {#if activeTab === "projects"}
+            <div class="max-w-5xl">
+                <!-- Form card -->
+                <div class="bg-white border border-gray-200 rounded-lg mb-8">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h2 class="text-sm font-semibold text-gray-800">
+                            {editingProjectId ? "Edit Project" : "Add New Project"}
+                        </h2>
+                        {#if editingProjectId}
+                            <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">Editing</span>
                         {/if}
-                        <div>
-                            <h3 class="font-semibold text-gray-800">
-                                {exp.position.th || exp.position.en}
-                            </h3>
-                            <p class="text-sm text-gray-600">
-                                {exp.company}
-                            </p>
-                            <p class="text-xs text-gray-500">
-                                {exp.period}
-                            </p>
-                        </div>
                     </div>
-                    <div class="space-x-2">
-                        <button
-                            on:click={() => startEditExperience(exp)}
-                            class="btn-edit text-sm"
-                            disabled={isLoading}>Edit</button
-                        >
-                        <button
-                            on:click={() => deleteExperience(exp.id)}
-                            class="btn-delete text-sm"
-                            disabled={isLoading}>Delete</button
-                        >
-                    </div>
-                </div>
-            {:else}
-                <p class="text-gray-500">No experiences found.</p>
-            {/each}
-        </div>
-    {/if}
 
-    <!-- Skills Section -->
-    {#if activeTab === "skills"}
-        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h2 class="text-xl font-semibold mb-4 text-gray-700">
-                {editingSkillId ? "Edit Skill" : "Add New Skill"}
-            </h2>
-            <form on:submit={handleSubmitSkill} class="space-y-4">
-                <div>
-                    <label
-                        for="skill-name"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Skill Name</label
-                    >
-                    <input
-                        type="text"
-                        id="skill-name"
-                        required
-                        bind:value={skillForm.name}
-                        class="w-full input-field"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="skill-category"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Category</label
-                    >
-                    <select
-                        id="skill-category"
-                        required
-                        bind:value={skillForm.category}
-                        class="w-full input-field"
-                    >
-                        <option value="" disabled>Select a category</option>
-                        {#each skillCategories as categoryOpt}
-                            <option value={categoryOpt.value}
-                                >{categoryOpt.label}</option
-                            >
-                        {/each}
-                    </select>
-                </div>
-                <div>
-                    <label
-                        for="skill-icon"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Icon URL</label
-                    >
-                    <input
-                        type="url"
-                        id="skill-icon"
-                        required
-                        bind:value={skillForm.icon}
-                        class="w-full input-field"
-                        placeholder="https://example.com/icon.svg"
-                    />
-                </div>
-                <div>
-                    <label
-                        for="skill-proficiency"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Proficiency</label
-                    >
-                    <select
-                        id="skill-proficiency"
-                        required
-                        bind:value={skillForm.proficiency}
-                        class="w-full input-field"
-                    >
-                        <option value="" disabled
-                            >Select proficiency level</option
-                        >
-                        {#each proficiencyLevels as level}
-                            <option value={level.value}
-                                >{level.label.en} / {level.label.th}</option
-                            >
-                        {/each}
-                    </select>
-                </div>
-                <div>
-                    <label
-                        for="skill-tooltip-th"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Tooltip (Thai)</label
-                    >
-                    <textarea
-                        id="skill-tooltip-th"
-                        rows="2"
-                        bind:value={skillForm.tooltip.th}
-                        class="w-full input-field"
-                        placeholder="คำอธิบายเพิ่มเติมเกี่ยวกับทักษะนี้"
-                    ></textarea>
-                </div>
-                <div>
-                    <label
-                        for="skill-tooltip-en"
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                        >Tooltip (English)</label
-                    >
-                    <textarea
-                        id="skill-tooltip-en"
-                        rows="2"
-                        bind:value={skillForm.tooltip.en}
-                        class="w-full input-field"
-                        placeholder="Additional information about this skill"
-                    ></textarea>
-                </div>
-                <div class="flex space-x-2">
-                    <button
-                        type="submit"
-                        class="btn-primary w-full"
-                        disabled={isLoading}
-                    >
-                        {isLoading
-                            ? "Saving..."
-                            : editingSkillId
-                              ? "Update Skill"
-                              : "Add Skill"}
-                    </button>
-                    {#if editingSkillId}
-                        <button
-                            type="button"
-                            on:click={resetSkillForm}
-                            class="btn-secondary w-full"
-                            disabled={isLoading}>Cancel Edit</button
-                        >
-                    {/if}
-                </div>
-            </form>
-        </div>
+                    <form on:submit={handleSubmitProject} class="p-6 space-y-6">
 
-        <h2 class="text-xl font-semibold mb-4 text-gray-700">
-            Existing Skills
-        </h2>
-        <div class="space-y-4">
-            {#each skills as skill (skill.id)}
-                <div
-                    class="bg-white p-4 rounded-lg shadow flex justify-between items-center"
-                >
-                    <div class="flex items-center">
-                        <img
-                            src={skill.icon}
-                            alt={skill.name}
-                            class="w-8 h-8 mr-3"
-                        />
-                        <div>
-                            <h3 class="font-semibold text-gray-800">
-                                {skill.name}
-                            </h3>
-                            <p class="text-xs text-gray-500">
-                                Category: {skill.category}
-                            </p>
-                            <p class="text-sm text-gray-500">
-                                Proficiency: {skill.proficiency.en ||
-                                    skill.proficiency.th}
-                            </p>
+                        <!-- Title -->
+                        <fieldset class="border-0 p-0 m-0">
+                            <legend class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Title</legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="title-th" class="field-label">Thai</label>
+                                    <input id="title-th" type="text" required bind:value={projectForm.title.th} class="field-input" />
+                                </div>
+                                <div>
+                                    <label for="title-en" class="field-label">English</label>
+                                    <input id="title-en" type="text" required bind:value={projectForm.title.en} class="field-input" />
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Description -->
+                        <fieldset class="border-0 p-0 m-0">
+                            <legend class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Short Description</legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="desc-th" class="field-label">Thai</label>
+                                    <textarea id="desc-th" rows="3" required bind:value={projectForm.description.th} class="field-input"></textarea>
+                                </div>
+                                <div>
+                                    <label for="desc-en" class="field-label">English</label>
+                                    <textarea id="desc-en" rows="3" required bind:value={projectForm.description.en} class="field-input"></textarea>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Learned -->
+                        <fieldset class="border-0 p-0 m-0">
+                            <legend class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">What I Learned <span class="normal-case font-normal text-gray-400">(optional)</span></legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="learned-th" class="field-label">Thai</label>
+                                    <textarea id="learned-th" rows="3" bind:value={projectForm.learned.th} class="field-input" placeholder="เช่น เรียนรู้การใช้ SvelteKit..."></textarea>
+                                </div>
+                                <div>
+                                    <label for="learned-en" class="field-label">English</label>
+                                    <textarea id="learned-en" rows="3" bind:value={projectForm.learned.en} class="field-input" placeholder="e.g. Learned SvelteKit..."></textarea>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Markdown Detail Content -->
+                        <fieldset class="border-0 p-0 m-0">
+                            <div class="flex items-center justify-between mb-3">
+                                <legend class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Detail Content (Markdown) <span class="normal-case font-normal text-gray-400">(optional)</span>
+                                </legend>
+                                <!-- Language toggle -->
+                                <div class="flex rounded border border-gray-200 overflow-hidden text-xs">
+                                    <button type="button" on:click={() => (markdownLang = "th")}
+                                        class="px-3 py-1 transition-colors {markdownLang === 'th' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}">
+                                        TH
+                                    </button>
+                                    <button type="button" on:click={() => (markdownLang = "en")}
+                                        class="px-3 py-1 transition-colors {markdownLang === 'en' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}">
+                                        EN
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Insert image helper -->
+                            <div class="flex flex-col sm:flex-row gap-2 mb-3 p-3 bg-gray-50 border border-gray-200 rounded">
+                                <div class="flex-1 min-w-0">
+                                    <label for="insert-img-alt" class="field-label">Alt text</label>
+                                    <input id="insert-img-alt" type="text" bind:value={insertImageAlt}
+                                        placeholder="Image description" class="field-input text-sm" />
+                                </div>
+                                <div class="flex-[2] min-w-0">
+                                    <label for="insert-img-url" class="field-label">Image URL</label>
+                                    <input id="insert-img-url" type="text" bind:value={insertImageUrl}
+                                        placeholder="https://example.com/image.png" class="field-input text-sm"
+                                        on:keydown={(e) => e.key === "Enter" && (e.preventDefault(), insertImageToMarkdown())} />
+                                </div>
+                                <div class="flex items-end shrink-0">
+                                    <button type="button" on:click={insertImageToMarkdown}
+                                        disabled={!insertImageUrl.trim()}
+                                        class="px-4 py-2 bg-gray-800 text-white text-sm rounded hover:bg-gray-700
+                                               transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
+                                        Insert Image
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Click in the editor to set cursor position, then click Insert Image to embed at that position.</p>
+
+                            <!-- Split editor / preview -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                                <div class="flex flex-col">
+                                    <span class="field-label mb-1">Editor — {markdownLang === "th" ? "Thai" : "English"}</span>
+                                    {#if markdownLang === "th"}
+                                        <textarea id="detail-th" bind:value={projectForm.detailContent.th} rows="16"
+                                            class="field-input font-mono text-sm resize-none"
+                                            placeholder="# Project title&#10;&#10;Content in markdown..."></textarea>
+                                    {:else}
+                                        <textarea id="detail-en" bind:value={projectForm.detailContent.en} rows="16"
+                                            class="field-input font-mono text-sm resize-none"
+                                            placeholder="# Project title&#10;&#10;Content in markdown..."></textarea>
+                                    {/if}
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="field-label mb-1">Preview</span>
+                                    <div class="flex-1 border border-gray-200 rounded p-4 bg-white overflow-y-auto min-h-[300px] text-sm markdown-preview">
+                                        {@html renderMarkdown(markdownLang === "th" ? projectForm.detailContent.th : projectForm.detailContent.en)}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cheatsheet -->
+                            <details class="mt-2">
+                                <summary class="text-xs text-gray-400 cursor-pointer hover:text-gray-600 select-none">Markdown syntax reference</summary>
+                                <div class="mt-2 p-3 bg-gray-50 rounded border border-gray-100 text-xs font-mono text-gray-600 grid grid-cols-2 gap-x-6 gap-y-1">
+                                    <span><strong># H1</strong></span>
+                                    <span><strong>## H2</strong></span>
+                                    <span><strong>**bold**</strong></span>
+                                    <span><strong>*italic*</strong></span>
+                                    <span><strong>- item</strong> bullet</span>
+                                    <span><strong>1. item</strong> ordered</span>
+                                    <span><strong>`code`</strong></span>
+                                    <span><strong>```block```</strong></span>
+                                    <span><strong>&gt; quote</strong></span>
+                                    <span><strong>---</strong> rule</span>
+                                    <span><strong>[text](url)</strong></span>
+                                    <span><strong>![alt](url)</strong></span>
+                                </div>
+                            </details>
+                        </fieldset>
+
+                        <!-- URLs -->
+                        <fieldset class="border-0 p-0 m-0">
+                            <legend class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Links</legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label for="image" class="field-label">Thumbnail URL <span class="text-red-400">*</span></label>
+                                    <input id="image" type="text" required bind:value={projectForm.image} class="field-input" placeholder="https://..." />
+                                </div>
+                                <div>
+                                    <label for="github" class="field-label">GitHub URL</label>
+                                    <input id="github" type="url" bind:value={projectForm.github} class="field-input" placeholder="https://github.com/..." />
+                                </div>
+                                <div>
+                                    <label for="demo" class="field-label">Demo URL</label>
+                                    <input id="demo" type="url" bind:value={projectForm.demo} class="field-input" placeholder="https://..." />
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Tech + Featured -->
+                        <fieldset class="border-0 p-0 m-0">
+                            <legend class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Options</legend>
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="tech" class="field-label">Technologies <span class="font-normal text-gray-400">(comma-separated)</span></label>
+                                    <input id="tech" type="text" required bind:value={techInputString} class="field-input"
+                                        placeholder="Svelte, Node.js, Firebase" />
+                                </div>
+                                <label class="flex items-center gap-2 cursor-pointer w-fit">
+                                    <input type="checkbox" bind:checked={projectForm.featured}
+                                        class="w-4 h-4 rounded border-gray-300 text-gray-800 focus:ring-gray-500" />
+                                    <span class="text-sm text-gray-700">Featured — show on homepage</span>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <!-- Actions -->
+                        <div class="flex gap-3 pt-2 border-t border-gray-100">
+                            <button type="submit" disabled={isLoading} class="btn-primary">
+                                {isLoading ? "Saving..." : editingProjectId ? "Update Project" : "Add Project"}
+                            </button>
+                            {#if editingProjectId}
+                                <button type="button" on:click={resetProjectForm} disabled={isLoading} class="btn-secondary">
+                                    Cancel
+                                </button>
+                            {/if}
                         </div>
-                    </div>
-                    <div class="space-x-2">
-                        <button
-                            on:click={() => startEditSkill(skill)}
-                            class="btn-edit text-sm"
-                            disabled={isLoading}>Edit</button
-                        >
-                        <button
-                            on:click={() => deleteSkill(skill.id)}
-                            class="btn-delete text-sm"
-                            disabled={isLoading}>Delete</button
-                        >
-                    </div>
+
+                    </form>
                 </div>
-            {:else}
-                <p class="text-gray-500">No skills found.</p>
-            {/each}
-        </div>
-    {/if}
+
+                <!-- Project list -->
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Existing Projects</h2>
+                <div class="space-y-2">
+                    {#each projects as project (project.id)}
+                        <div class="bg-white border border-gray-200 rounded-lg px-4 py-3 flex items-center justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">
+                                    {project.title.en || project.title.th}
+                                    {#if project.featured}
+                                        <span class="ml-2 text-xs font-normal bg-blue-50 text-blue-600 px-2 py-0.5 rounded">Featured</span>
+                                    {/if}
+                                </p>
+                                <p class="text-xs text-gray-400 truncate mt-0.5">{project.tech.join(", ")}</p>
+                            </div>
+                            <div class="flex gap-2 shrink-0">
+                                <button on:click={() => startEditProject(project)} disabled={isLoading} class="btn-sm-edit">Edit</button>
+                                <button on:click={() => deleteProject(project.id)} disabled={isLoading} class="btn-sm-delete">Delete</button>
+                            </div>
+                        </div>
+                    {:else}
+                        <p class="text-sm text-gray-400">No projects yet.</p>
+                    {/each}
+                </div>
+            </div>
+        {/if}
+
+        <!-- ==================== EXPERIENCES ==================== -->
+        {#if activeTab === "experiences"}
+            <div class="max-w-3xl">
+                <div class="bg-white border border-gray-200 rounded-lg mb-8">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h2 class="text-sm font-semibold text-gray-800">
+                            {editingExperienceId ? "Edit Experience" : "Add New Experience"}
+                        </h2>
+                        {#if editingExperienceId}
+                            <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">Editing</span>
+                        {/if}
+                    </div>
+                    <form on:submit={handleSubmitExperience} class="p-6 space-y-5">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="exp-company" class="field-label">Company</label>
+                                <input id="exp-company" type="text" required bind:value={experienceForm.company} class="field-input" placeholder="Company name" />
+                            </div>
+                            <div>
+                                <label for="exp-logo" class="field-label">Logo URL</label>
+                                <input id="exp-logo" type="url" bind:value={experienceForm.logo} class="field-input" placeholder="https://..." />
+                            </div>
+                        </div>
+
+                        <fieldset class="border-0 p-0 m-0">
+                            <legend class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Position</legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="exp-position-th" class="field-label">Thai</label>
+                                    <input id="exp-position-th" type="text" required bind:value={experienceForm.position.th} class="field-input" />
+                                </div>
+                                <div>
+                                    <label for="exp-position-en" class="field-label">English</label>
+                                    <input id="exp-position-en" type="text" required bind:value={experienceForm.position.en} class="field-input" />
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div>
+                            <label for="exp-period" class="field-label">Period</label>
+                            <input id="exp-period" type="text" required bind:value={experienceForm.period} class="field-input" placeholder="e.g. 2023 – Present" />
+                        </div>
+
+                        <fieldset class="border-0 p-0 m-0">
+                            <legend class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Description</legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="exp-desc-th" class="field-label">Thai</label>
+                                    <textarea id="exp-desc-th" rows="4" required bind:value={experienceForm.description.th} class="field-input"></textarea>
+                                </div>
+                                <div>
+                                    <label for="exp-desc-en" class="field-label">English</label>
+                                    <textarea id="exp-desc-en" rows="4" required bind:value={experienceForm.description.en} class="field-input"></textarea>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="flex gap-3 pt-2 border-t border-gray-100">
+                            <button type="submit" disabled={isLoading} class="btn-primary">
+                                {isLoading ? "Saving..." : editingExperienceId ? "Update Experience" : "Add Experience"}
+                            </button>
+                            {#if editingExperienceId}
+                                <button type="button" on:click={resetExperienceForm} disabled={isLoading} class="btn-secondary">Cancel</button>
+                            {/if}
+                        </div>
+                    </form>
+                </div>
+
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Existing Experiences</h2>
+                <div class="space-y-2">
+                    {#each experiences as exp (exp.id)}
+                        <div class="bg-white border border-gray-200 rounded-lg px-4 py-3 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3 min-w-0">
+                                {#if exp.logo}
+                                    <img src={exp.logo} alt={exp.company} class="w-8 h-8 object-contain shrink-0 rounded" />
+                                {/if}
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium text-gray-800 truncate">{exp.position.th || exp.position.en}</p>
+                                    <p class="text-xs text-gray-400">{exp.company} · {exp.period}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 shrink-0">
+                                <button on:click={() => startEditExperience(exp)} disabled={isLoading} class="btn-sm-edit">Edit</button>
+                                <button on:click={() => deleteExperience(exp.id)} disabled={isLoading} class="btn-sm-delete">Delete</button>
+                            </div>
+                        </div>
+                    {:else}
+                        <p class="text-sm text-gray-400">No experiences yet.</p>
+                    {/each}
+                </div>
+            </div>
+        {/if}
+
+        <!-- ==================== SKILLS ==================== -->
+        {#if activeTab === "skills"}
+            <div class="max-w-3xl">
+                <div class="bg-white border border-gray-200 rounded-lg mb-8">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h2 class="text-sm font-semibold text-gray-800">
+                            {editingSkillId ? "Edit Skill" : "Add New Skill"}
+                        </h2>
+                        {#if editingSkillId}
+                            <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">Editing</span>
+                        {/if}
+                    </div>
+                    <form on:submit={handleSubmitSkill} class="p-6 space-y-5">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="skill-name" class="field-label">Skill Name</label>
+                                <input id="skill-name" type="text" required bind:value={skillForm.name} class="field-input" />
+                            </div>
+                            <div>
+                                <label for="skill-category" class="field-label">Category</label>
+                                <select id="skill-category" required bind:value={skillForm.category} class="field-input">
+                                    <option value="" disabled>Select category</option>
+                                    {#each skillCategories as cat}
+                                        <option value={cat.value}>{cat.label}</option>
+                                    {/each}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="skill-icon" class="field-label">Icon URL</label>
+                                <input id="skill-icon" type="url" required bind:value={skillForm.icon} class="field-input" placeholder="https://..." />
+                            </div>
+                            <div>
+                                <label for="skill-proficiency" class="field-label">Proficiency</label>
+                                <select id="skill-proficiency" required bind:value={selectedProficiencyKey} class="field-input">
+                                    <option value="" disabled>Select level</option>
+                                    {#each proficiencyLevels as level}
+                                        <option value={level.key}>{level.key} / {level.value.th}</option>
+                                    {/each}
+                                </select>
+                            </div>
+                        </div>
+
+                        <fieldset class="border-0 p-0 m-0">
+                            <legend class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Tooltip</legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="skill-tooltip-th" class="field-label">Thai</label>
+                                    <textarea id="skill-tooltip-th" rows="2" bind:value={skillForm.tooltip.th} class="field-input" placeholder="คำอธิบายเพิ่มเติม"></textarea>
+                                </div>
+                                <div>
+                                    <label for="skill-tooltip-en" class="field-label">English</label>
+                                    <textarea id="skill-tooltip-en" rows="2" bind:value={skillForm.tooltip.en} class="field-input" placeholder="Additional info"></textarea>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="flex gap-3 pt-2 border-t border-gray-100">
+                            <button type="submit" disabled={isLoading} class="btn-primary">
+                                {isLoading ? "Saving..." : editingSkillId ? "Update Skill" : "Add Skill"}
+                            </button>
+                            {#if editingSkillId}
+                                <button type="button" on:click={resetSkillForm} disabled={isLoading} class="btn-secondary">Cancel</button>
+                            {/if}
+                        </div>
+                    </form>
+                </div>
+
+                <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Existing Skills</h2>
+                <div class="space-y-2">
+                    {#each skills as skill (skill.id)}
+                        <div class="bg-white border border-gray-200 rounded-lg px-4 py-3 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <img src={skill.icon} alt={skill.name} class="w-7 h-7 object-contain shrink-0" />
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium text-gray-800">{skill.name}</p>
+                                    <p class="text-xs text-gray-400">{skill.category} · {skill.proficiency.en || skill.proficiency.th}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 shrink-0">
+                                <button on:click={() => startEditSkill(skill)} disabled={isLoading} class="btn-sm-edit">Edit</button>
+                                <button on:click={() => deleteSkill(skill.id)} disabled={isLoading} class="btn-sm-delete">Delete</button>
+                            </div>
+                        </div>
+                    {:else}
+                        <p class="text-sm text-gray-400">No skills yet.</p>
+                    {/each}
+                </div>
+            </div>
+        {/if}
+
+    </main>
 </div>
+
+
+
+
+<style>
+    /* ---- Form utilities ---- */
+    :global(.field-label) {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+        letter-spacing: 0.01em;
+    }
+    :global(.field-input) {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 0.625rem;
+        font-size: 0.875rem;
+        color: #111827;
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    :global(.field-input:focus) {
+        border-color: #374151;
+        box-shadow: 0 0 0 2px rgba(55,65,81,0.12);
+    }
+    :global(.field-input::placeholder) { color: #9ca3af; }
+
+    :global(.btn-primary) {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #fff;
+        background: #111827;
+        border-radius: 0.375rem;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    :global(.btn-primary:hover:not(:disabled)) { background: #374151; }
+    :global(.btn-primary:disabled) { opacity: 0.5; cursor: not-allowed; }
+
+    :global(.btn-secondary) {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        background: #f3f4f6;
+        border-radius: 0.375rem;
+        border: 1px solid #e5e7eb;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    :global(.btn-secondary:hover:not(:disabled)) { background: #e5e7eb; }
+    :global(.btn-secondary:disabled) { opacity: 0.5; cursor: not-allowed; }
+
+    :global(.btn-sm-edit) {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #374151;
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    :global(.btn-sm-edit:hover:not(:disabled)) { background: #e5e7eb; }
+
+    :global(.btn-sm-delete) {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #b91c1c;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    :global(.btn-sm-delete:hover:not(:disabled)) { background: #fee2e2; }
+    :global(.btn-sm-edit:disabled),
+    :global(.btn-sm-delete:disabled) { opacity: 0.5; cursor: not-allowed; }
+
+    /* ---- Markdown live preview styles ---- */
+    :global(.markdown-preview h1),
+    :global(.markdown-preview h2),
+    :global(.markdown-preview h3) {
+        font-weight: 700;
+        color: #1f2937;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+    :global(.markdown-preview h1) {
+        font-size: 1.5rem;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.25rem;
+    }
+    :global(.markdown-preview h2) {
+        font-size: 1.2rem;
+    }
+    :global(.markdown-preview h3) {
+        font-size: 1rem;
+    }
+
+    :global(.markdown-preview p) {
+        color: #374151;
+        margin-bottom: 0.75rem;
+        line-height: 1.75;
+        font-size: 0.9rem;
+    }
+
+    :global(.markdown-preview ul) {
+        list-style-type: disc;
+        padding-left: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    :global(.markdown-preview ol) {
+        list-style-type: decimal;
+        padding-left: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    :global(.markdown-preview li) {
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+        color: #374151;
+    }
+
+    :global(.markdown-preview code) {
+        background: #f3f4f6;
+        border-radius: 3px;
+        padding: 0.1em 0.35em;
+        font-family: monospace;
+        font-size: 0.85em;
+        color: #4f46e5;
+    }
+
+    :global(.markdown-preview pre) {
+        background: #1e293b;
+        color: #e2e8f0;
+        border-radius: 6px;
+        padding: 1rem;
+        overflow-x: auto;
+        margin-bottom: 0.75rem;
+        font-size: 0.82rem;
+    }
+    :global(.markdown-preview pre code) {
+        background: none;
+        padding: 0;
+        color: inherit;
+    }
+
+    :global(.markdown-preview blockquote) {
+        border-left: 3px solid #6366f1;
+        padding-left: 0.75rem;
+        margin-left: 0;
+        color: #6b7280;
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+
+    :global(.markdown-preview a) {
+        color: #4f46e5;
+        text-decoration: underline;
+    }
+    :global(.markdown-preview img) {
+        max-width: 100%;
+        border-radius: 6px;
+        margin: 0.5rem 0;
+    }
+    :global(.markdown-preview hr) {
+        border: none;
+        border-top: 1px solid #e5e7eb;
+        margin: 1rem 0;
+    }
+
+    :global(.markdown-preview strong) {
+        font-weight: 700;
+        color: #111827;
+    }
+    :global(.markdown-preview em) {
+        font-style: italic;
+    }
+</style>

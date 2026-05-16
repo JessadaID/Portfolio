@@ -159,6 +159,7 @@
       educationTitle: "Education History",
       viewMoreProjects: "View More Projects",
       viewLessProjects: "Show Less",
+      readMore: "Read More",
     },
     th: {
       navHome: "หน้าแรก",
@@ -194,6 +195,7 @@
       educationTitle: "ประวัติการศึกษา",
       viewMoreProjects: "ดูโปรเจคเพิ่มเติม",
       viewLessProjects: "แสดงน้อยลง",
+      readMore: "อ่านเพิ่มเติม",
     },
   };
 
