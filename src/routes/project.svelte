@@ -225,6 +225,33 @@
                       </span>
                     </a>
                   {/if}
+
+                  <!-- Read More button — navigate to full project detail page -->
+                  <a
+                    href="/projects/{project.id}"
+                    class="inline-flex items-center justify-center px-4 py-2
+                           bg-transparent text-blue-600 font-medium
+                           border-1 border-blue-600 hover:bg-blue-600 hover:text-white
+                           transition-all duration-300 group/btn
+                           dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-500 dark:hover:text-white"
+                  >
+                    <svg
+                      class="w-5 h-5 mr-2 group-hover/btn:translate-x-0.5 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                    <span class="group-hover/btn:translate-x-0.5 transition-transform">
+                      {uiStrings[currentLang].readMore}
+                    </span>
+                  </a>
                 </div>
               </div>
             </div>
