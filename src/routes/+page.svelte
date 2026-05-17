@@ -135,6 +135,7 @@
       heroHello: "Hello, I'm",
       heroViewWork: "View My Work",
       heroContactMe: "Contact Me",
+      heroViewPresentation: "View Presentation",
       aboutMeTitle: "About Me",
       aboutExperience: "Experience",
       aboutYears: "3+ Years in Web Development",
@@ -171,6 +172,7 @@
       heroHello: "สวัสดี, ผมชื่อ",
       heroViewWork: "ดูผลงานของฉัน",
       heroContactMe: "ติดต่อฉัน",
+      heroViewPresentation: "ดู Presentation",
       aboutMeTitle: "เกี่ยวกับฉัน",
       aboutExperience: "ประสบการณ์",
       aboutYears: "3+ ปีในการพัฒนาเว็บ",
@@ -456,6 +458,18 @@
             >
               {uiStrings[currentLang].heroContactMe}
             </button>
+            <a
+              href="/presentation"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="border border-purple-600 text-purple-600 px-5 py-2.5
+                   hover:bg-purple-600 hover:text-white transition-all duration-300 shadow-lg
+                   border-2
+                   dark:text-purple-400 dark:bg-transperent dark:border-2 dark:border-purple-400 dark:hover:bg-purple-600 dark:hover:text-white text-sm md:text-base inline-flex items-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              {uiStrings[currentLang].heroViewPresentation}
+            </a>
           </div>
         {/if}
       </div>
